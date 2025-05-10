@@ -1,0 +1,232 @@
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(180deg, #0d1117, #161b22);
+  color: #c9d1d9;
+}
+
+header {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  width: 100%;
+  padding: 20px;
+  background: linear-gradient(90deg, #3d41ff, #5ab2ff);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+
+.top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: 2em;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* Glowing Tagline with Slide-In Transition */
+/* Glowing Tagline with Slide-In Transition */
+.tagline {
+  font-size: 1.2em;
+  color: #ffffff;
+  animation: slideIn 1.5s ease-in-out, glow 3s infinite alternate;
+  text-shadow: 0 0 5px #54daf5, 0 0 10px #54daf5, 0 0 20px #54daf5, 0 0 40px #54daf5, 0 0 60px #54daf5;
+  margin-right: 50px;
+/* Starts invisible for slide-in effect */
+}
+
+/* Glow Animation */
+@keyframes glow {
+  0% {
+    text-shadow: 0 0 5px #54daf5, 0 0 10px #54daf5, 0 0 20px #54daf5, 0 0 40px #54daf5, 0 0 60px #54daf5;
+  }
+  50% {
+    text-shadow: 0 0 10px #54daf5, 0 0 20px #54daf5, 0 0 30px #54daf5, 0 0 50px #54daf5, 0 0 80px #54daf5;
+  }
+  100% {
+    text-shadow: 0 0 5px #54daf5, 0 0 15px #54daf5, 0 0 25px #54daf5, 0 0 45px #54daf5, 0 0 75px #54daf5;
+  }
+}
+
+/* Slide-In Animation */
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+
+.navigation {
+  display: flex;
+  gap: 20px;
+  justify-content: right;
+  margin-right: 46px;
+}
+
+.navigation a {
+  font-size: 1.1em;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 500;
+  position: relative;
+  transition: color 0.3s;
+
+}
+
+.navigation a:hover {
+  color: #ffdd57;
+}
+
+.navigation a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 100%;
+  height: 3px;
+  background: #ffdd57;
+  transform-origin: right;
+  border-radius: 5px;
+  transform: scaleX(0);
+  transition: transform .3s ease;
+}
+
+.navigation a:hover::after {
+  transform-origin: left;
+  transform: scaleX(1);
+}
+
+.btnLogin-popup {
+  padding: 10px 20px;
+  background: #ffdd57;
+  border: none;
+  outline: none;
+  border-radius: 25px;
+  font-size: 1em;
+  color: #162938;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.btnLogin-popup:hover {
+  transform: scale(1.05);
+  background: #ffcb46;
+}
+
+.hero {
+  text-align: center;
+  padding: 70px 10px 60px;
+  background: linear-gradient(180deg, #161b22, #0d1117);
+}
+
+.hero h3 {
+  margin-top: 50px;
+  font-size: 1.8em;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.hero p {
+  font-size: 1.2em;
+  color: #c9d1d9;
+  margin-top: 10px;
+}
+
+.section {
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 30px;
+  background: #22262c;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+h2 {
+  color: #ffffff;
+  font-size: 1.8em;
+  margin-bottom: 20px;
+}
+
+input {
+  padding: 10px;
+  width: 80%;
+  margin: 10px 0;
+  border: none;
+  border-radius: 5px;
+  background: #2c333a;
+  color: #c9d1d9;
+  font-size: 1em;
+  box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.2);
+
+}
+
+button {
+  padding: 12px 20px;
+  margin-left: 20px;
+  border: none;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #3d41ff, #5ab2ff);
+  color: #fff;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:disabled {
+  background: #555;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background: linear-gradient(90deg, #5ab2ff, #3d41ff);
+}
+
+/* Style for the Peer Competitors section */
+.competitors-section {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.2em; /* Increase the font size */
+  line-height: 1.8; /* Adjust line spacing for better readability */
+  margin-top: 20px;
+}
+
+/* Style for the preformatted text in Peer Competitors */
+.competitors-list {
+  font-size: 1.1em; /* Slightly smaller size for nested text */
+  padding-left: 15px; /* Add indentation for competitors */
+}
+
+
+footer {
+  text-align: center;
+  padding: 20px;
+  background: #0d1117;
+  color: #c9d1d9;
+  margin-top: 40px;
+}
+
+footer .social-icons {
+  margin: 10px 0;
+}
+
+footer .social-icons a {
+  margin: 0 10px;
+  color: #c9d1d9;
+  font-size: 1.2em;
+  transition: color 0.3s ease;
+}
+
+footer .social-icons a:hover {
+  color: #5ab2ff;
+}
