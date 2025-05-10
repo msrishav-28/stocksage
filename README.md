@@ -1,49 +1,68 @@
-# StockMind Pro: AI-Powered Stock Analysis & Prediction
+# StockMind Pro: Stock Price Prediction & Analysis
 
-# StockMind Pro: AI-Powered Stock Analysis & Prediction
-
-StockMind Pro combines advanced machine learning prediction with competitor analysis to provide a comprehensive stock analysis tool for investors and financial analysts.
+This application predicts the next day's closing price of stocks using a Linear Regression model trained on historical data. It now includes competitor analysis, company information, and a modern, user-friendly interface.
 
 
-## ✨ Features
 
-- **AI-Powered Price Prediction:** Forecast next-day closing prices using machine learning
-- **Company Research:** Get company descriptions from Wikipedia
-- **Competitor Analysis:** Identify top peer competitors in the same industry
-- **Real-Time Stock Data:** Fetch current and historical stock prices
-- **Comparative Analysis:** Compare performance against top competitors
-- **Interactive Charts:** Visualize price trends and comparative performance
-- **Sleek UI:** Modern, responsive design for desktop and mobile
+## Features 
 
-## 🧠 Machine Learning Models
+- **Predict stock closing price** for the next day using a Linear Regression model
+- **Company information** from Wikipedia
+- **Industry competitor analysis** with price comparisons
+- **Interactive charts** for stock price visualization
+- **Modern, responsive UI** for better user experience
+- The prediction model uses:
+  - Historical price lags
+  - Volatility
+  - Momentum indicators
+  - Moving averages
+  - Volume data
 
-StockMind Pro leverages multiple advanced ML algorithms and selects the best performer:
+## Technologies Used
 
-- Linear Regression
-- Random Forest Regressor
-- Gradient Boosting Regressor
-- XGBoost Regressor
-- LightGBM Regressor
-- Support Vector Regressor (SVR)
+- **Flask**: Web framework for building the application
+- **YFinance**: Fetch stock data from Yahoo Finance
+- **Scikit-learn**: For machine learning algorithms and data preprocessing
+- **Wikipedia API**: For company information
+- **Chart.js**: For interactive data visualization
+- **Pandas & NumPy**: For data manipulation
+- **Joblib**: For saving and loading machine learning models
 
-## 🔧 Technical Features
+## Working
+- **Input**: The user enters either a company name or stock ticker symbol
+- **Analysis**: The application retrieves company information, historical prices, and identifies industry competitors
+- **Prediction**: The Linear Regression model predicts the next day's closing price
+- **Output**: Results are displayed in an intuitive interface with charts and competitor comparison
 
-- Technical indicators for prediction:
-  - Price Lags (previous 5 days)
-  - Price Volatility
-  - Momentum
-  - Moving Average Ratio
-  - Volume Changes
+## Installation
 
-## 💻 Installation
-
-### Prerequisites
-- Python 3.8+
-- Git
-
-### Setup
+Follow these steps to get your local development environment set up:
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/stockmind-pro.git
-   cd stockmind-pro
+    ```bash
+    git clone https://github.com/yourusername/stockmind-pro.git
+    cd stockmind-pro
+    ```
+
+2. Create and activate a virtual environment:
+    - For Windows:
+      ```bash
+      python -m venv venv
+      venv\Scripts\activate
+      ```
+    - For macOS/Linux:
+      ```bash
+      python3 -m venv venv
+      source venv/bin/activate
+      ```
+
+3. Install the required dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4. Make sure you have the trained model (`best_model.pkl`) and scaler (`scaler.pkl`) in the root directory, or train the model by running the `model.py` file.
+
+## Running the Application
+
+To run the Flask application, use the following comman
