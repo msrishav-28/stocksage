@@ -34,6 +34,9 @@ This application predicts the next day's closing price of stocks using a Linear 
 - **Prediction**: The Linear Regression model predicts the next day's closing price
 - **Output**: Results are displayed in an intuitive interface with charts and competitor comparison
 
+## Note
+-The model has been trained once with a 9-year span of Data from Tesla, and is deployed as best_model.pkl
+
 ## Installation
 
 Follow these steps to get your local development environment set up:
