@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StockMind Pro - Stock Analysis & Prediction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <div class="top-header">
+            <div class="logo">StockMind Pro</div>
+            <div class="tagline">AI-Powered Stock Analysis & Prediction</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="card">
+            <h2>Analyze & Predict Stock Performance</h2>
+            <form id="stockForm">
+                <div class="input-group">
+                    <label for="companyName">Company Name (e.g. Apple, Tesla):</label>
+                    <input type="text" id="companyName" name="companyName" placeholder="Enter company name">
+                </div>
+                
+                <div class="input-group">
+                    <label for="ticker">Stock Ticker (e.g. AAPL, TSLA):</label>
+                    <input type="text" id="ticker" name="ticker" placeholder="Enter ticker symbol">
+                </div>
+                
+                <p style="margin-bottom: 15px; color: #aaa;">* Enter either company name or ticker symbol</p>
+
+                <div class="input-group">
+                    <label for="source">Data Source:</label>
+                    <select id="source" name="source">
+                        <option value="yfinance">Yahoo Finance</option>
+                        <option value="nasdaq" disabled>NASDAQ (Coming Soon)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-block">Analyze & Predict</button>
+            </form>
+            <div id="loader" class="loader" style="display: none;"></div>
+        </div>
+
+        <div id="results" class="results-card">
+            <div class="results-row">
+                <div class="results-col">
+                    <h3>Company Information</h3>
+                    <div id="companyInfo" class="company-info"></div>
+                </div>
+                <div class="results-col">
+                    <h3>Ticker & Current Price</h3>
+                    <div class="data-box">
+                        <div id="tickerDisplay"></div>
+                        <div id="currentPrice"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-row">
+                <div class="results-col">
+                    <h3>Next Day Price Prediction</h3>
+                    <div class="data-box">
+                        <p>Our Linear Regression model predicts the next day's closing price will be:</p>
+                        <div id="predictedPrice" class="prediction-value"></div>
+                        <p class="prediction-note">Based on machine learning analysis of historical data</p>
+                    </div>
+                </div>
+                <div class="results-col">
+                    <h3>Historical Price Trend</h3>
+                    <div class="chart-container">
+                        <canvas id="priceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="competitorsSection" class="competitors-section">
+                <h3>Top Industry Competitors</h3>
+                <div id="competitorsList"></div>
+                <div class="chart-container">
+                    <canvas id="competitorsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 StockMind Pro. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const stockForm = document.getElementById('stockForm');
+        const loader = document.getElementById('loader');
+        const results = document.getElementById('results');
+
+        stockForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Get form values
+            const companyName = document.getElementById('companyName').value.trim();
+            const ticker = document.getElementById('ticker').value.trim();
+            const source = document.getElementById('source').value;
+            
+            if (!companyName && !ticker) {
+                alert('Please enter either a company name or ticker symbol');
+                return;
+            }
+            
+            // Show loader, hide results
+            loader.style.display = 'block';
+            results.style.display = 'none';
+            
+            try {
+                // Make API call to your backend
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        company_name: companyName,
+                        ticker: ticker,
+                        source: source
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Update UI with results
+                    displayResults(data);
+                } else {
+                    alert(data.error || 'Error processing your request');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            } finally {
+                // Hide loader
+                loader.style.display = 'none';
+            }
+        });
+
+        function displayResults(data) {
+            // Company info
+            document.getElementById('companyInfo').innerHTML = `
+                <p>${data.description || 'No company description available'}</p>
+            `;
+            
+            // Ticker and current price
+            document.getElementById('tickerDisplay').innerHTML = `
+                <p><strong>Ticker:</strong> ${data.ticker}</p>
+            `;
+            document.getElementById('currentPrice').innerHTML = `
+                <p><strong>Current Price:</strong> $${data.current_price}</p>
+            `;
+            
+            // Predicted price
+            document.getElementById('predictedPrice').textContent = `$${data.predicted_price}`;
+            
+            // Price chart
+            renderPriceChart(data.time_labels, data.stock_prices);
+            
+            // Competitors section
+            if (data.top_competitors && data.top_competitors.length > 0) {
+                const competitorsList = document.getElementById('competitorsList');
+                competitorsList.innerHTML = '';
+                
+                data.top_competitors.forEach(comp => {
+                    const div = document.createElement('div');
+                    div.className = 'competitor-item';
+                    div.innerHTML = `
+                        <span class="competitor-name">${comp.name} (${comp.ticker})</span>
+                        <span class="competitor-price">$${comp.stock_price}</span>
+                    `;
+                    competitorsList.appendChild(div);
+                });
+                
+                renderCompetitorsChart(data.top_competitors);
+                document.getElementById('competitorsSection').style.display = 'block';
+            } else {
+                document.getElementById('competitorsSection').style.display = 'none';
+            }
+            
+            // Show results
+            results.style.display = 'block';
+        }
+
+        function renderPriceChart(labels, prices) {
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            
+            // Create gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(93, 178, 255, 0.5)');
+            gradient.addColorStop(1, 'rgba(93, 178, 255, 0)');
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Stock Price',
+                        data: prices,
+                        borderColor: '#5ab2ff',
+                        backgroundColor: gradient,
+                        tension: 0.3,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#c9d1d9'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#c9d1d9'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#c9d1d9'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderCompetitorsChart(competitors) {
+            // Only proceed if we have competitors with stock prices
+            if (!competitors || competitors.length === 0 || !competitors.some(comp => comp.stock_prices && comp.stock_prices.length > 0)) {
+                return;
+            }
+            
+            const ctx = document.getElementById('competitorsChart').getContext('2d');
+            
+            // Get competitors that have stock_prices
+            const validCompetitors = competitors.filter(comp => comp.stock_prices && comp.stock_prices.length > 0);
+            
+            if (validCompetitors.length === 0) {
+                return;
+            }
+            
+            // Extract data
+            const datasets = validCompetitors.map((comp, index) => {
+                // Create different colors for each competitor
+                const colors = ['#5ab2ff', '#4caf50', '#ff9800'];
+                
+                return {
+                    label: comp.name,
+                    data: comp.stock_prices,
+                    borderColor: colors[index % colors.length],
+                    tension: 0.3
+                };
+            });
+            
+            // Use the first competitor's time labels
+            const labels = validCompetitors[0].time_labels;
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#c9d1d9'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#c9d1d9'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#c9d1d9'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
