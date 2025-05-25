@@ -1,4 +1,4 @@
-# StockMind Pro: Stock Price Prediction & Analysis
+# StockSage: Stock Price Prediction & Analysis
 
 This application predicts the next day's closing price of stocks using a machine learning model and provides in-depth AI-powered analysis. It features a Flask API backend and a modern React frontend.
 
