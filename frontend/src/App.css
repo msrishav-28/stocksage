@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.App {
+  text-align: center;
+  min-height: 100vh;
+}
+
+.app-header {
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #1e1e1e 0%, #121212 100%);
+}
+
+.price-positive {
+  color: #4caf50; /* Green */
+}
+
+.price-negative {
+  color: #f44336; /* Red */
+}
+
+/* Ensure chart containers have a relative position for the canvas */
+.chart-container {
+    position: relative;
+    height: 300px; /* or any desired height */
+    width: 100%;
+}

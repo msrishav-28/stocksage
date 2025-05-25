@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, jsonify
+# app.py
+
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 import joblib
 import yfinance as yf
@@ -12,7 +14,8 @@ import os
 import json
 
 app = Flask(__name__)
-CORS(app)
+# Enable CORS to allow requests from your React frontend
+CORS(app) 
 
 # Load the best model and scaler
 try:
@@ -24,8 +27,8 @@ except Exception as e:
     model = None
     scaler = None
 
-# ============= EXISTING FUNCTIONS =============
-
+# ============= ALL YOUR EXISTING FUNCTIONS (create_lag_features, fetch_wikipedia_summary, etc.) GO HERE =============
+# (No changes are needed in your analysis functions)
 def create_lag_features(df, n_lags=5):
     """Create lag features for the model - EXISTING FUNCTION"""
     df_copy = df.copy()
@@ -537,10 +540,7 @@ def generate_recommendation(sentiment, risk_level, technical_indicators, predict
 
 # ============= ROUTES =============
 
-@app.route('/')
-def home():
-    """Render the main page"""
-    return render_template('index.html')
+# REMOVED the home() route that served index.html
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
@@ -548,7 +548,6 @@ def analyze():
     data = request.json
     company_name = data.get('company_name', '')
     ticker_input = data.get('ticker', '')
-    source = data.get('source', 'yfinance')
     
     # Get ticker
     if not ticker_input and company_name:
@@ -721,19 +720,13 @@ def analyze():
             'error': f"An error occurred: {str(e)}"
         })
 
+# This route can be removed if you no longer need it.
 @app.route('/predict', methods=['POST'])
 def predict():
     """Original predict endpoint for backward compatibility"""
     try:
         # Get the user inputs
         ticker = request.form['ticker']
-        source = request.form['source']
-        
-        print(f"Received ticker: {ticker} from {source}")
-
-        # Fetch stock data from Yahoo Finance only
-        if source != 'yfinance':
-            return jsonify({'predicted_price': "Currently, only Yahoo Finance (yfinance) is supported."})
         
         # Fetch data from Yahoo Finance
         end_date = datetime.now()
@@ -742,8 +735,6 @@ def predict():
 
         if df.empty:
             return jsonify({"error": "No data found for the given ticker"})
-
-        print(f"Fetched data for {ticker} from {source}")
 
         # Process the data with lag features
         df_processed = create_lag_features(df, n_lags=5)
@@ -760,13 +751,12 @@ def predict():
         # Convert the prediction from ndarray to float and round to 2 decimal places
         predicted_price = round(float(predicted_price[0]), 2)
 
-        print(f"Predicted Price: {predicted_price}")
-
         return jsonify({'predicted_price': predicted_price})
     
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({"error": "An error occurred while making the prediction."})
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
