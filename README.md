@@ -25,7 +25,7 @@ Follow these steps to get your local development environment set up.
 
 ```bash
 # Clone the repository
-git clone [https://github.com/yourusername/stockmind-pro.git](https://github.com/yourusername/stockmind-pro.git)
+git clone [https://github.com/yourusername/stockmind-pro.git](https://github.com/msrishav-28/stocksage.git)
 cd stockmind-pro
 
 # Create and activate a Python virtual environment
