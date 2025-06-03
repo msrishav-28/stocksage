@@ -173,6 +173,3 @@ The `model.py` script is responsible for training the stock price prediction mod
 To train the model with a different ticker or adjust parameters, you can modify the `ticker` variable and other settings directly in `model.py`.
 
 ---
-
-This README provides a comprehensive guide to understanding, installing, and running the StockSage application.
-```
