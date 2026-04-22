@@ -41,7 +41,7 @@ function App() {
     setResults(null);
     const toastId = toast.loading('Fetching data and running analysis...');
     try {
-      const response = await axios.post('/analyze', { company_name: companyName, ticker });
+      const response = await axios.post('/api/analyze', { company_name: companyName, ticker });
       
       if (response.data.success) {
         setResults(response.data);
