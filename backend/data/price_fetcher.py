@@ -6,7 +6,7 @@ from loguru import logger
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 
-@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10), reraise=True)
 def fetch_ohlcv(
     ticker: str,
     period: str = "2y",
@@ -62,6 +62,8 @@ def fetch_ticker_info(ticker: str) -> dict:
     return {
         "ticker": ticker,
         "name": info.get("shortName", ""),
+        "long_name": info.get("longName", info.get("shortName", "")),
+        "description": info.get("longBusinessSummary", ""),
         "sector": info.get("sector", "Unknown"),
         "industry": info.get("industry", "Unknown"),
         "market_cap": info.get("marketCap", 0),

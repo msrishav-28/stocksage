@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from loguru import logger
 
-from backend.routers import predict, sentiment, technical, backtest, screener, competitor, macro, portfolio
+from backend.routers import analyze, predict, sentiment, technical, backtest, screener, competitor, macro, portfolio
 from backend.cache.redis_client import init_redis, close_redis
 from backend.db.session import init_db
 
@@ -34,6 +34,7 @@ app.add_middleware(
 )
 
 app.include_router(predict.router,    prefix="/api/predict",    tags=["Prediction"])
+app.include_router(analyze.router,    prefix="/api/analyze",    tags=["Analyze"])
 app.include_router(sentiment.router,  prefix="/api/sentiment",  tags=["Sentiment"])
 app.include_router(technical.router,  prefix="/api/technical",  tags=["Technical"])
 app.include_router(backtest.router,   prefix="/api/backtest",   tags=["Backtesting"])

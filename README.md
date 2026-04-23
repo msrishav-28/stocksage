@@ -1,175 +1,91 @@
-# StockSage: AI-Powered Stock Analysis & Price Prediction
+# StockSage
 
-StockSage is a web application designed to provide users with insightful stock analysis and predict future closing prices using machine learning. It combines a Python Flask backend for data processing and model serving with a modern React frontend for a responsive user experience.
+StockSage is an AI-powered stock analysis platform with:
+- **FastAPI backend** (`backend/`)
+- **React frontend** (`frontend/`)
+- Multi-agent prediction (technical + sentiment + macro), technical indicators, backtesting, screener, and portfolio analytics.
 
-## Features
+## Architecture
 
--   **AI-Powered Analysis**: Offers in-depth insights including:
-    * **Market Sentiment**: Assesses bullish, bearish, or neutral sentiment with confidence scores and contributing factors.
-    * **Risk Assessment**: Determines low, medium, or high-risk levels based on volatility, RSI, and price movements.
-    * **ELI5 Explanation**: Provides a simple, easy-to-understand explanation of the stock's current situation.
-    * **Actionable Recommendations**: Generates buy, sell, hold, or watch recommendations based on the analysis.
--   **Price Prediction**: Predicts the next day's closing price using a machine learning model. The model considers historical price lags, volatility, momentum, and volume data.
--   **Company Information**: Fetches and displays company summaries from Wikipedia.
--   **Competitor Analysis**: Identifies key industry competitors and visualizes their price trends.
--   **Interactive Charts**: Visualizes historical price data, trading volume, and competitor trends using Chart.js.
--   **Technical Indicators**: Calculates and displays various technical indicators like RSI, Moving Averages (20-day, 50-day), 52-week high/low, Bollinger Bands, and volume analysis.
--   **Modern UI**: A responsive and user-friendly interface built with React and Material-UI.
+- **Backend**: FastAPI + Pydantic + SQLAlchemy (async) + Redis cache
+- **Frontend**: React (CRA) + MUI + Axios + Chart.js
+- **Data providers**: Yahoo Finance (prices), NewsAPI (news), FRED (macro)
+- **Optional ML**: FinBERT + TFT forecast (checkpoint-based)
 
-## Technologies Used
+## Repository Layout
 
-**Backend**:
-* Python
-* Flask
-* Flask-CORS
-* YFinance
-* Scikit-learn
-* Pandas
-* Numpy
-* Joblib
-* Requests
-* Wikipedia
-* XGBoost
-* LightGBM
-
-**Frontend**:
-* React
-* Axios
-* Material-UI (MUI)
-* Chart.js
-* React Chartjs 2
-* React Hot Toast
-
-**ML Model**:
-* The prediction model utilizes historical price lags, volatility, momentum, and volume data.
-* Trained using various regressors including Linear Regression, Random Forest, Gradient Boosting, XGBoost, LightGBM, and SVR. The best-performing model is saved.
-
-## Project Structure
-
-```
-stocksage/
-├── frontend/
-│ ├── public/
-│ │ └── index.html # Main HTML file
-│ ├── src/
-│ │ ├── components/ # React components
-│ │ │ ├── AIAnalysis.jsx # Displays AI-driven sentiment, risk, ELI5, and recommendations
-│ │ │ ├── CompetitorAnalysis.jsx # Displays competitor data and charts
-│ │ │ ├── PriceDisplay.jsx # Displays current and predicted prices, company info, and price chart
-│ │ │ ├── StockForm.jsx # Input form for company name or ticker
-│ │ │ └── TechnicalAnalysis.jsx # Displays technical indicators and volume chart
-│ │ ├── App.css # Main app styling
-│ │ ├── App.jsx # Main application component
-│ │ └── index.js # Entry point for React app
-│ ├── package.json # Frontend dependencies and scripts
-│ └── package-lock.json # Frontend dependency lock file
-├── AIAnalysis.css # Styling for AI Analysis components (appears to be a duplicate or older version)
-├── app.py # Flask backend application
-├── model.py # Script for training and saving the ML model
-├── best_model.pkl # Saved trained machine learning model
-├── scaler.pkl # Saved scaler for data preprocessing
-├── requirements.txt # Backend Python dependencies
-└── README.md # This file
+```text
+backend/     FastAPI app, routers, ML agents, indicators, tests
+frontend/    React app
+scripts/     Training/seed/deploy helpers
 ```
 
-## Installation
+## Required Environment Variables
 
-Follow these steps to get your local development environment set up.
+Copy `.env.example` to `.env` and set values:
 
-### 1. Backend Setup
+| Variable | Required | Purpose |
+|---|---|---|
+| APP_ENV | yes | Runtime environment (`development`, `production`) |
+| DEBUG | yes | Debug logging toggle |
+| DATABASE_URL | yes | Async PostgreSQL URL |
+| REDIS_URL | yes | Redis connection URL |
+| NEWS_API_KEY | optional | News sentiment source |
+| FRED_API_KEY | optional | Macro data source |
+| ALPHAVANTAGE_KEY | optional | Reserved external provider key |
+| TFT_CHECKPOINT_PATH | optional | TFT checkpoint file path |
+| FINBERT_MODEL | optional | HuggingFace model id |
+| DEVICE | optional | `cpu` or `cuda` |
+| MODAL_TOKEN_ID | optional | Modal auth token id |
+| MODAL_TOKEN_SECRET | optional | Modal auth token secret |
+
+## Local Development
+
+### Backend
 
 ```bash
-# Clone the repository
-git clone [https://github.com/msrishav-28/stocksage.git](https://github.com/msrishav-28/stocksage.git)
-cd stocksage
-
-# Create and activate a Python virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
-
-# Install backend dependencies
-pip install -r requirements.txt #
-
-# Train the model (if best_model.pkl and scaler.pkl are not present or need retraining)
-# The model.py script will train models for a predefined ticker (e.g., TSLA)
-# and save the best performing one along with the scaler.
-python model.py #
+pip install -r requirements.txt
+python -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
 ```
-Make sure you have `best_model.pkl` and `scaler.pkl` in the root directory. These are generated by `model.py`.
 
-### 2. Frontend Setup
+Health check:
 
 ```bash
-# Navigate to the frontend directory
-cd frontend
-
-# Install frontend dependencies
-npm install #
+curl http://127.0.0.1:8000/health
 ```
 
-## Usage
+### Frontend
 
-### 1. Run the Backend Server
-
-From the project's root directory (`stocksage/`):
-```bash
-source venv/bin/activate  # Activate virtual environment if not already
-flask run # Or python app.py
-```
-The Flask server will typically start on `http://127.0.0.1:5000`.
-
-### 2. Run the Frontend Development Server
-
-In a new terminal, navigate to the `frontend` directory:
 ```bash
 cd frontend
-npm start #
+npm install
+npm start
 ```
-This will open the React application in your default web browser, usually at `http://localhost:3000`. The frontend is configured to proxy API requests to the Flask backend.
 
-## Backend API
+Frontend dev server proxies API requests to `http://127.0.0.1:8000`.
 
-The Flask backend exposes the following main endpoint:
+## Core API Endpoints
 
-* **`POST /analyze`**:
-    * Accepts a JSON payload with `company_name` or `ticker`.
-    * Fetches stock data using YFinance.
-    * Retrieves company information from Wikipedia.
-    * Performs price prediction using the pre-trained ML model.
-    * Conducts AI-driven analysis for sentiment, risk, technical indicators, and generates an ELI5 explanation and recommendation.
-    * Identifies and fetches data for top competitors.
-    * Returns a comprehensive JSON response with all the analyzed data and predictions.
+- `POST /api/analyze`
+- `POST /api/predict`
+- `GET /api/sentiment/{ticker}`
+- `GET /api/technical/{ticker}`
+- `POST /api/backtest`
+- `GET /api/screener`
+- `GET /api/competitor/{ticker}`
+- `GET /api/macro/snapshot`
+- `POST /api/portfolio/analyze`
 
-An older `POST /predict` endpoint also exists for basic price prediction, primarily for backward compatibility.
+## Validation Commands
 
-## Frontend Components
+```bash
+# Backend tests
+python -m pytest -q
 
-The React frontend is structured into several key components located in `frontend/src/components/`:
+# Frontend lint/build/test
+cd frontend
+npx eslint src --ext .js,.jsx
+npm run build
+CI=true npm test -- --watch=false --passWithNoTests
+```
 
-* **`StockForm.jsx`**: Provides a user interface to input a stock ticker or company name.
-* **`PriceDisplay.jsx`**: Shows the current stock price, daily change, predicted price, prediction confidence, and a historical price chart.
-* **`AIAnalysis.jsx`**: Displays the core AI-generated insights including market sentiment, risk assessment, an ELI5 (Explain Like I'm 5) summary, and an investment recommendation.
-* **`TechnicalAnalysis.jsx`**: Presents key technical indicators (RSI, Moving Averages, 52-week position) and a volume chart.
-* **`CompetitorAnalysis.jsx`**: Lists top industry competitors with their current stock prices and a comparative price trend chart.
-* **`App.jsx`**: The main application component that orchestrates the UI, handles state management for API results and loading, and manages tab navigation for different analysis sections.
-
-## Model Training (`model.py`)
-
-The `model.py` script is responsible for training the stock price prediction model:
-1.  **Data Fetching**: Downloads historical stock data for a predefined ticker (e.g., "TSLA") using `yfinance`.
-2.  **Feature Engineering**: Creates lag features, volatility, momentum, MA10 ratio, and volume change from the historical data.
-3.  **Data Scaling**: Uses `StandardScaler` from scikit-learn to scale the features.
-4.  **Train/Test Split**: Splits the data into training and testing sets.
-5.  **Model Training**: Trains multiple regression models:
-    * Linear Regression
-    * Random Forest Regressor
-    * Gradient Boosting Regressor
-    * XGBoost Regressor
-    * LightGBM Regressor
-    * SVR (Support Vector Regressor)
-6.  **Model Evaluation**: Evaluates each model based on Mean Squared Error (MSE).
-7.  **Saving the Best Model**: Saves the model with the lowest MSE as `best_model.pkl` and the scaler as `scaler.pkl` using `joblib`.
-
-To train the model with a different ticker or adjust parameters, you can modify the `ticker` variable and other settings directly in `model.py`.
-
----

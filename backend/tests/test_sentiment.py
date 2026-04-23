@@ -10,7 +10,7 @@ class TestSentimentAgent:
     @pytest.mark.asyncio
     async def test_sentiment_no_articles(self):
         """Should return neutral when no articles found."""
-        with patch("backend.ml.sentiment_agent.fetch_news", new_callable=AsyncMock, return_value=[]):
+        with patch("backend.data.news_fetcher.fetch_news", new_callable=AsyncMock, return_value=[]):
             from backend.ml.sentiment_agent import SentimentAgent
             agent = SentimentAgent()
             result = await agent.analyze("NONEXIST")
@@ -27,7 +27,7 @@ class TestSentimentAgent:
             {"title": "Market crashes amid fears", "description": "", "url": "", "published_at": "", "source": ""},
         ]
 
-        with patch("backend.ml.sentiment_agent.fetch_news", new_callable=AsyncMock, return_value=mock_articles):
+        with patch("backend.data.news_fetcher.fetch_news", new_callable=AsyncMock, return_value=mock_articles):
             from backend.ml.sentiment_agent import SentimentAgent
             agent = SentimentAgent()
             result = await agent.analyze("TEST")

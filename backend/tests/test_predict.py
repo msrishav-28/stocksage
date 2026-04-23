@@ -14,7 +14,7 @@ class TestEnsemble:
 
         df = build_feature_df(sample_ohlcv_df, ticker="TEST")
 
-        with patch("backend.ml.sentiment_agent.fetch_news", new_callable=AsyncMock, return_value=[]), \
+        with patch("backend.data.news_fetcher.fetch_news", new_callable=AsyncMock, return_value=[]), \
              patch("backend.data.macro_fetcher.fetch_macro_snapshot", return_value={}), \
              patch("backend.data.price_fetcher.fetch_ticker_info", return_value={"sector": "Technology"}):
 
@@ -38,7 +38,7 @@ class TestEnsemble:
 
         df = build_feature_df(sample_ohlcv_df, ticker="TEST")
 
-        with patch("backend.ml.sentiment_agent.fetch_news", new_callable=AsyncMock, return_value=[]), \
+        with patch("backend.data.news_fetcher.fetch_news", new_callable=AsyncMock, return_value=[]), \
              patch("backend.data.macro_fetcher.fetch_macro_snapshot", return_value={}), \
              patch("backend.data.price_fetcher.fetch_ticker_info", return_value={"sector": "Technology"}):
 

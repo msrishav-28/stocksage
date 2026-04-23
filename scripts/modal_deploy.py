@@ -19,7 +19,6 @@ try:
             "huggingface-hub==0.24.5",
             "pandas==2.2.2",
             "numpy==1.26.4",
-            "pandas-ta==0.3.14b0",
             "PyWavelets==1.7.0",
             "yfinance==0.2.43",
             "fredapi==0.5.2",

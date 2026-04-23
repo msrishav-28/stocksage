@@ -36,9 +36,9 @@ class SentimentAgent:
             from backend.ml.finbert_sentiment import score_batch, aggregate_sentiment
             scored = score_batch(headlines)
             aggregated = aggregate_sentiment(scored)
-        except RuntimeError:
+        except (RuntimeError, ImportError, OSError, ValueError) as e:
             # FinBERT not available — use rule-based fallback
-            logger.warning("FinBERT unavailable. Using neutral fallback.")
+            logger.warning(f"FinBERT unavailable ({e}). Using neutral fallback.")
             aggregated = {
                 "composite_score": 0.0,
                 "label": "neutral",
