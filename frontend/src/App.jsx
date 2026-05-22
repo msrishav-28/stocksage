@@ -1,139 +1,140 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { Toaster, toast } from 'react-hot-toast';
-import { createTheme, ThemeProvider, Container, Box, Typography, CircularProgress, Tabs, Tab } from '@mui/material';
+import {
+  Container, Box, Typography, Tabs, Tab, CircularProgress, Alert, Stack, Chip,
+} from '@mui/material';
+import InsightsIcon from '@mui/icons-material/Insights';
 
 import StockForm from './components/StockForm';
-import PriceDisplay from './components/PriceDisplay';
-import AIAnalysis from './components/AIAnalysis';
-import TechnicalAnalysis from './components/TechnicalAnalysis';
-import CompetitorAnalysis from './components/CompetitorAnalysis';
-import './App.css';
+import SignalHero from './components/SignalHero';
+import ThesisCard from './components/ThesisCard';
+import AgentBreakdown from './components/AgentBreakdown';
+import TechnicalPanel from './components/TechnicalPanel';
+import CompetitorPanel from './components/CompetitorPanel';
+import { getPrediction, errorMessage } from './api';
 
-// Create a dark theme using Material-UI
-const darkTheme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#90caf9',
-    },
-    secondary: {
-      main: '#f48fb1',
-    },
-    background: {
-      default: '#121212',
-      paper: '#1e1e1e',
-    },
-  },
-  typography: {
-    fontFamily: 'Poppins, sans-serif',
-  },
-});
+function EmptyState() {
+  return (
+    <Box sx={{ textAlign: 'center', py: 8, color: 'text.secondary' }}>
+      <InsightsIcon sx={{ fontSize: 56, color: 'primary.main', opacity: 0.8 }} />
+      <Typography variant="h6" sx={{ mt: 2, color: 'text.primary' }}>
+        Analyze any stock with a multi-agent AI ensemble
+      </Typography>
+      <Typography variant="body2" sx={{ mt: 1, maxWidth: 520, mx: 'auto' }}>
+        Enter a ticker above. StockSage runs technical, sentiment, and macro
+        agents, then synthesizes an explainable BUY / HOLD / SELL signal with a
+        confidence score and written thesis.
+      </Typography>
+    </Box>
+  );
+}
 
 function App() {
-  const [results, setResults] = useState(null);
+  const [prediction, setPrediction] = useState(null);
+  const [ticker, setTicker] = useState('');
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState(0);
+  const [error, setError] = useState(null);
+  const [tab, setTab] = useState(0);
 
-  // Handles the API call to the Flask backend
-  const handleAnalyze = async (companyName, ticker) => {
+  const handleSearch = async (symbol) => {
     setLoading(true);
-    setResults(null);
-    const toastId = toast.loading('Fetching data and running analysis...');
+    setError(null);
+    setPrediction(null);
+    setTab(0);
+    const toastId = toast.loading(`Analyzing ${symbol}…`);
     try {
-      const response = await axios.post('/api/analyze', { company_name: companyName, ticker });
-      
-      if (response.data.success) {
-        setResults(response.data);
-        toast.success('Analysis complete!', { id: toastId });
-      } else {
-        toast.error(response.data.error || 'Error analyzing stock', { id: toastId });
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('An error occurred. Please check the console.', { id: toastId });
+      const { data } = await getPrediction(symbol);
+      setPrediction(data);
+      setTicker(symbol);
+      toast.success(`${symbol}: ${data.final_signal}`, { id: toastId });
+    } catch (err) {
+      const msg = errorMessage(err, 'Failed to analyze that ticker');
+      setError(msg);
+      toast.error(msg, { id: toastId });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
-  };
-  
-  // Renders the content for the selected tab
-  const renderTabContent = () => {
-    if (!results) return null;
-    
-    switch(activeTab) {
-      case 0:
-        return <AIAnalysis analysis={results.ai_analysis} />;
-      case 1:
-        return <TechnicalAnalysis 
-                  indicators={results.ai_analysis.technical_indicators}
-                  volumes={results.volumes}
-                  labels={results.time_labels}
-                />;
-      case 2:
-        return <CompetitorAnalysis competitors={results.top_competitors} />;
-      default:
-        return null;
-    }
-  };
-
   return (
-    <ThemeProvider theme={darkTheme}>
-      <Toaster position="bottom-right" />
-      <Box className="App" sx={{ bgcolor: 'background.default', color: 'text.primary' }}>
-        <header className="app-header">
-          <Container>
-            <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
-              StockMind Pro
-            </Typography>
-            <Typography variant="h6" component="p" sx={{ color: 'text.secondary' }}>
-              AI-Powered Stock Analysis & Prediction
-            </Typography>
-          </Container>
-        </header>
-        
-        <Container sx={{ py: 4 }}>
-          <StockForm onSubmit={handleAnalyze} loading={loading} />
-          
-          {loading && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-              <CircularProgress />
-            </Box>
-          )}
+    <Box className="app-root">
+      <Toaster position="bottom-right" toastOptions={{ style: { background: '#161b22', color: '#e6edf3' } }} />
 
-          {results && (
-            <Box sx={{ mt: 4 }}>
-              <PriceDisplay 
-                companyName={results.company_name}
-                ticker={results.ticker}
-                description={results.description}
-                currentPrice={results.current_price}
-                priceChange={results.price_change}
-                changePercent={results.change_percent}
-                predictedPrice={results.predicted_price}
-                predictionConfidence={results.prediction_confidence}
-                stockPrices={results.stock_prices}
-                timeLabels={results.time_labels}
-              />
-              
-              <Box sx={{ borderBottom: 1, borderColor: 'divider', my: 3 }}>
-                <Tabs value={activeTab} onChange={handleTabChange} centered>
-                  <Tab label="AI Analysis" />
-                  <Tab label="Technical" />
-                  <Tab label="Competitors" />
-                </Tabs>
-              </Box>
-
-              {renderTabContent()}
+      <Box className="app-header">
+        <Container maxWidth="lg" sx={{ py: 3 }}>
+          <Stack direction="row" alignItems="center" spacing={1.5}>
+            <InsightsIcon sx={{ color: 'primary.main', fontSize: 32 }} />
+            <Box>
+              <Typography variant="h5" sx={{ lineHeight: 1.1 }}>StockSage</Typography>
+              <Typography variant="caption" color="text.secondary">
+                AI-powered stock analysis &amp; prediction
+              </Typography>
             </Box>
-          )}
+            <Box sx={{ flex: 1 }} />
+            <Chip label="v2.0" size="small" variant="outlined" />
+          </Stack>
         </Container>
       </Box>
-    </ThemeProvider>
+
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <StockForm onSearch={handleSearch} loading={loading} />
+
+        {loading && (
+          <Box sx={{ textAlign: 'center', py: 8 }}>
+            <CircularProgress />
+            <Typography color="text.secondary" sx={{ mt: 2 }}>
+              Running the agent ensemble…
+            </Typography>
+          </Box>
+        )}
+
+        {!loading && error && (
+          <Alert severity="error" sx={{ mt: 4 }}>{error}</Alert>
+        )}
+
+        {!loading && !error && !prediction && <EmptyState />}
+
+        {!loading && prediction && (
+          <Box sx={{ mt: 4 }}>
+            <Tabs
+              value={tab}
+              onChange={(_, v) => setTab(v)}
+              sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}
+            >
+              <Tab label="Overview" />
+              <Tab label="Technical" />
+              <Tab label="Competitors" />
+            </Tabs>
+
+            {tab === 0 && (
+              <Stack spacing={2.5}>
+                <SignalHero prediction={prediction} />
+                <ThesisCard prediction={prediction} />
+                <Box>
+                  <Typography variant="overline" color="text.secondary">
+                    Agent breakdown
+                  </Typography>
+                  <Box sx={{ mt: 1 }}>
+                    <AgentBreakdown agentSignals={prediction.agent_signals || {}} />
+                  </Box>
+                </Box>
+              </Stack>
+            )}
+
+            {tab === 1 && <TechnicalPanel ticker={ticker} />}
+            {tab === 2 && <CompetitorPanel ticker={ticker} />}
+          </Box>
+        )}
+      </Container>
+
+      <Box sx={{ borderTop: 1, borderColor: 'divider', py: 3, mt: 4 }}>
+        <Container maxWidth="lg">
+          <Typography variant="caption" color="text.secondary">
+            StockSage is an analytical tool, not financial advice. Markets carry risk.
+          </Typography>
+        </Container>
+      </Box>
+    </Box>
   );
 }
 

@@ -1,78 +1,76 @@
-import Grid from '@mui/material/Grid';
 import React, { useState } from 'react';
-import { Card, CardContent, TextField, Button, Box, CircularProgress, Typography } from '@mui/material';
+import { Paper, InputBase, Button, Box, Chip, Stack } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 
-const StockForm = ({ onSubmit, loading }) => {
-  const [companyName, setCompanyName] = useState('');
+const SUGGESTIONS = ['AAPL', 'MSFT', 'NVDA', 'TSLA', 'AMZN', 'GOOGL'];
+
+/**
+ * Ticker search bar. Calls onSearch(ticker) with an upper-cased, trimmed symbol.
+ */
+const StockForm = ({ onSearch, loading }) => {
   const [ticker, setTicker] = useState('');
+
+  const submit = (value) => {
+    const symbol = (value || '').toUpperCase().trim();
+    if (symbol && !loading) onSearch(symbol);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!companyName && !ticker) {
-      alert('Please enter a company name or ticker symbol.');
-      return;
-    }
-    onSubmit(companyName, ticker);
+    submit(ticker);
   };
 
   return (
-    <Card sx={{ mb: 4 }}>
-      <CardContent>
-        <Typography variant="h5" component="h2" gutterBottom>
-          Analyze & Predict Stock Performance
-        </Typography>
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} sm={5}>
-              <TextField
-                fullWidth
-                label="Company Name (e.g., Apple)"
-                variant="outlined"
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                disabled={loading}
-              />
-            </Grid>
-             <Grid item xs={12} sm={2} sx={{textAlign: 'center'}}>
-                <Typography color="text.secondary">OR</Typography>
-            </Grid>
-            <Grid item xs={12} sm={5}>
-              <TextField
-                fullWidth
-                label="Stock Ticker (e.g., AAPL)"
-                variant="outlined"
-                value={ticker}
-                onChange={(e) => setTicker(e.target.value.toUpperCase())}
-                disabled={loading}
-              />
-            </Grid>
-          </Grid>
-          <Box sx={{ mt: 2, position: 'relative' }}>
-            <Button
-              type="submit"
-              variant="contained"
-              size="large"
-              fullWidth
-              disabled={loading}
-            >
-              {loading ? 'Analyzing...' : 'Analyze & Predict'}
-            </Button>
-            {loading && (
-              <CircularProgress
-                size={24}
-                sx={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  marginTop: '-12px',
-                  marginLeft: '-12px',
-                }}
-              />
-            )}
-          </Box>
-        </form>
-      </CardContent>
-    </Card>
+    <Box>
+      <Paper
+        component="form"
+        onSubmit={handleSubmit}
+        elevation={0}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          p: '6px 6px 6px 18px',
+          border: '1px solid',
+          borderColor: 'divider',
+          borderRadius: 3,
+        }}
+      >
+        <SearchIcon sx={{ color: 'text.secondary', mr: 1 }} />
+        <InputBase
+          sx={{ flex: 1, fontSize: '1.05rem', letterSpacing: 0.5 }}
+          placeholder="Enter a ticker — e.g. AAPL"
+          value={ticker}
+          onChange={(e) => setTicker(e.target.value.toUpperCase())}
+          inputProps={{ 'aria-label': 'stock ticker', maxLength: 6 }}
+          disabled={loading}
+        />
+        <Button
+          type="submit"
+          variant="contained"
+          size="large"
+          disabled={loading || !ticker.trim()}
+          sx={{ borderRadius: 2, px: 3 }}
+        >
+          {loading ? 'Analyzing…' : 'Analyze'}
+        </Button>
+      </Paper>
+
+      <Stack direction="row" spacing={1} sx={{ mt: 1.5, flexWrap: 'wrap', gap: 1 }}>
+        {SUGGESTIONS.map((s) => (
+          <Chip
+            key={s}
+            label={s}
+            size="small"
+            variant="outlined"
+            onClick={() => {
+              setTicker(s);
+              submit(s);
+            }}
+            disabled={loading}
+          />
+        ))}
+      </Stack>
+    </Box>
   );
 };
 
