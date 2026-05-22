@@ -1,6 +1,5 @@
 from loguru import logger
 from backend.config import get_settings
-import pandas as pd
 
 
 MACRO_SERIES = {

@@ -63,7 +63,7 @@ def main():
 
     # Train
     os.makedirs(args.checkpoint_dir, exist_ok=True)
-    model = train_tft(training_dataset, validation_dataset, checkpoint_dir=args.checkpoint_dir)
+    train_tft(training_dataset, validation_dataset, checkpoint_dir=args.checkpoint_dir)
 
     logger.success(f"Model saved to {args.checkpoint_dir}")
 

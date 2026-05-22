@@ -27,6 +27,7 @@ newsapi-python==0.2.7
 requests==2.32.3
 
 # ── Technical Analysis ─────────────────────────────────────────
+pandas-ta==0.3.14b0
 ta==0.11.0
 PyWavelets==1.7.0
 
@@ -54,8 +55,7 @@ tenacity==9.0.0
 orjson==3.10.7
 pytz==2024.1
 
-# ── Dev & Testing ──────────────────────────────────────────────
-pytest==8.3.2
-pytest-asyncio==0.23.8
-pytest-cov==5.0.0
-ruff==0.5.7
+# ── API hardening ──────────────────────────────────────────────
+slowapi==0.1.9
+
+# Dev & testing dependencies live in requirements-dev.txt

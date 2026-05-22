@@ -8,18 +8,11 @@ def get_strategy_signals(df: pd.DataFrame, strategy_name: str) -> tuple:
     """
     Returns (entries, exits) boolean Series for the chosen strategy.
     """
-    strategies = {
-        "rsi_macd": _rsi_macd_strategy,
-        "ema_crossover": _ema_crossover_strategy,
-        "bollinger_breakout": _bollinger_breakout_strategy,
-        "mean_reversion": _mean_reversion_strategy,
-        "momentum": _momentum_strategy,
-    }
-
-    strategy_fn = strategies.get(strategy_name)
+    strategy_fn = _STRATEGIES.get(strategy_name)
     if strategy_fn is None:
-        available = list(strategies.keys())
-        raise ValueError(f"Unknown strategy: {strategy_name}. Available: {available}")
+        raise ValueError(
+            f"Unknown strategy: {strategy_name}. Available: {sorted(STRATEGY_NAMES)}"
+        )
 
     logger.info(f"Generating signals for strategy: {strategy_name}")
     return strategy_fn(df)
@@ -58,3 +51,15 @@ def _momentum_strategy(df: pd.DataFrame) -> tuple:
     entries = (df["adx_14"] > 25) & (df["dmp_14"] > df["dmn_14"]) & (df["rsi_14"] > 50)
     exits   = (df["adx_14"] < 20) | (df["dmp_14"] < df["dmn_14"]) | (df["rsi_14"] > 75)
     return entries.astype(bool), exits.astype(bool)
+
+
+# Registry of available strategies — defined after the functions it references.
+_STRATEGIES = {
+    "rsi_macd": _rsi_macd_strategy,
+    "ema_crossover": _ema_crossover_strategy,
+    "bollinger_breakout": _bollinger_breakout_strategy,
+    "mean_reversion": _mean_reversion_strategy,
+    "momentum": _momentum_strategy,
+}
+
+STRATEGY_NAMES = frozenset(_STRATEGIES)

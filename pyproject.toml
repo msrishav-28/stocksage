@@ -6,79 +6,29 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
 
-dependencies = [
-    # Web Framework
-    "fastapi==0.115.0",
-    "uvicorn[standard]==0.30.6",
-    "python-multipart==0.0.9",
-    "httpx==0.27.0",
-
-    # Data Validation
-    "pydantic==2.8.2",
-    "pydantic-settings==2.4.0",
-
-    # Database
-    "sqlalchemy[asyncio]==2.0.35",
-    "asyncpg==0.29.0",
-    "alembic==1.13.2",
-
-    # Cache
-    "redis[asyncio]==5.0.8",
-    "hiredis==3.0.0",
-
-    # Data Fetching
-    "yfinance==0.2.43",
-    "pandas==2.2.2",
-    "numpy==1.26.4",
-    "pandas-market-calendars==4.4.1",
-    "fredapi==0.5.2",
-    "newsapi-python==0.2.7",
-    "requests==2.32.3",
-
-    # Technical Analysis
-    "ta==0.11.0",
-    "PyWavelets==1.7.0",
-
-    # Machine Learning
-    "torch==2.4.0",
-    "pytorch-lightning==2.4.0",
-    "pytorch-forecasting==1.1.1",
-    "scikit-learn==1.5.1",
-    "scipy==1.14.1",
-    "joblib==1.4.2",
-
-    # NLP / Sentiment
-    "transformers==4.44.0",
-    "huggingface-hub==0.24.5",
-    "sentencepiece==0.2.0",
-    "accelerate==0.33.0",
-
-    # Backtesting
-    "vectorbt==0.26.2",
-
-    # Utilities
-    "python-dotenv==1.0.1",
-    "loguru==0.7.2",
-    "tenacity==9.0.0",
-    "orjson==3.10.7",
-    "pytz==2024.1",
-]
-
-[project.optional-dependencies]
-dev = [
-    "pytest==8.3.2",
-    "pytest-asyncio==0.23.8",
-    "pytest-cov==5.0.0",
-    "ruff==0.5.7",
-]
+# Runtime dependencies are sourced from requirements.txt (single source of truth).
+# requirements.txt is what the Dockerfile installs; this keeps the two in sync.
+# Dev/test tooling lives in requirements-dev.txt.
+dynamic = ["dependencies"]
 
 [build-system]
 requires = ["setuptools>=68.0"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools.packages.find]
+include = ["backend*"]
+
 [tool.ruff]
 target-version = "py311"
 line-length = 120
+
+[tool.ruff.lint]
+# E701: the aligned `if cond: signals.append(n)` pattern used in the indicator
+# confluence scoring is intentional and more readable than the expanded form.
+ignore = ["E701"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

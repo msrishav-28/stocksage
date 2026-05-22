@@ -1,19 +1,14 @@
-"""FinBERT sentiment scoring for financial news headlines."""
+"""FinBERT sentiment scoring for financial news headlines.
+
+torch / transformers are imported lazily inside the scoring functions so that
+importing this module (e.g. for the pure-Python ``aggregate_sentiment``) does
+not pay the multi-second cost of loading torch.
+"""
 
 import numpy as np
 from typing import List
 from loguru import logger
 from functools import lru_cache
-
-try:
-    import torch
-    from transformers import BertTokenizer, BertForSequenceClassification
-    from torch.nn.functional import softmax
-    FINBERT_AVAILABLE = True
-except ImportError:
-    FINBERT_AVAILABLE = False
-    logger.warning("transformers/torch not installed. FinBERT disabled.")
-
 
 FINBERT_MODEL_NAME = "ProsusAI/finbert"
 LABELS = ["positive", "negative", "neutral"]
@@ -21,8 +16,12 @@ LABELS = ["positive", "negative", "neutral"]
 
 @lru_cache(maxsize=1)
 def load_finbert():
-    if not FINBERT_AVAILABLE:
-        raise RuntimeError("transformers/torch not installed.")
+    """Load the FinBERT tokenizer + model once (cached). Raises if unavailable."""
+    try:
+        from transformers import BertTokenizer, BertForSequenceClassification
+    except ImportError as e:
+        raise RuntimeError(f"transformers not installed: {e}")
+
     logger.info("Loading FinBERT model...")
     tokenizer = BertTokenizer.from_pretrained(FINBERT_MODEL_NAME)
     model = BertForSequenceClassification.from_pretrained(FINBERT_MODEL_NAME)
@@ -33,6 +32,8 @@ def load_finbert():
 
 def score_headline(text: str) -> dict:
     """
+    Score a single headline.
+
     Returns:
         {
           "label": "positive" | "negative" | "neutral",
@@ -40,16 +41,12 @@ def score_headline(text: str) -> dict:
           "probabilities": {"positive": float, "negative": float, "neutral": float}
         }
     """
+    import torch
+    from torch.nn.functional import softmax
+
     tokenizer, model = load_finbert()
 
-    inputs = tokenizer(
-        text,
-        return_tensors="pt",
-        max_length=512,
-        truncation=True,
-        padding=True,
-    )
-
+    inputs = tokenizer(text, return_tensors="pt", max_length=512, truncation=True, padding=True)
     with torch.no_grad():
         outputs = model(**inputs)
         probs = softmax(outputs.logits, dim=1).squeeze().numpy()
@@ -65,22 +62,16 @@ def score_headline(text: str) -> dict:
 
 
 def score_batch(headlines: List[str], batch_size: int = 32) -> List[dict]:
-    """
-    Scores a list of headlines in batches for efficiency.
-    Returns list of dicts from score_headline.
-    """
+    """Score a list of headlines in batches for efficiency."""
+    import torch
+    from torch.nn.functional import softmax
+
     tokenizer, model = load_finbert()
     results = []
 
     for i in range(0, len(headlines), batch_size):
         batch = headlines[i : i + batch_size]
-        inputs = tokenizer(
-            batch,
-            return_tensors="pt",
-            max_length=512,
-            truncation=True,
-            padding=True,
-        )
+        inputs = tokenizer(batch, return_tensors="pt", max_length=512, truncation=True, padding=True)
         with torch.no_grad():
             outputs = model(**inputs)
             probs = softmax(outputs.logits, dim=1).numpy()
@@ -100,8 +91,8 @@ def score_batch(headlines: List[str], batch_size: int = 32) -> List[dict]:
 
 def aggregate_sentiment(scored_headlines: List[dict]) -> dict:
     """
-    Produces a single aggregated sentiment signal from a list of scored headlines.
-    Uses volume-weighted average (more headlines = stronger signal).
+    Aggregate a list of scored headlines into a single sentiment signal.
+    Pure function — no torch dependency.
     """
     if not scored_headlines:
         return {

@@ -1,5 +1,7 @@
 """Macro router — FRED data and sector analysis."""
 
+import asyncio
+
 from fastapi import APIRouter, HTTPException
 from loguru import logger
 
@@ -10,6 +12,31 @@ from backend.cache.redis_client import get_cached, set_cache
 router = APIRouter()
 
 
+def _macro_snapshot_sync() -> dict:
+    snapshot = fetch_macro_snapshot()
+    return {"snapshot": snapshot, "macro_score": compute_macro_score(snapshot)}
+
+
+def _sector_analysis_sync(sector: str, etf: str) -> dict:
+    df = fetch_ohlcv(etf, period="6mo")
+    if df.empty:
+        raise ValueError(f"No data for sector ETF {etf}")
+
+    current = float(df["close"].iloc[-1])
+    pct_1mo = float((df["close"].iloc[-1] / df["close"].iloc[-22] - 1) * 100) if len(df) >= 22 else 0.0
+    pct_3mo = float((df["close"].iloc[-1] / df["close"].iloc[-66] - 1) * 100) if len(df) >= 66 else 0.0
+
+    snapshot = fetch_macro_snapshot()
+    return {
+        "sector": sector,
+        "etf": etf,
+        "price": round(current, 2),
+        "return_1mo_pct": round(pct_1mo, 2),
+        "return_3mo_pct": round(pct_3mo, 2),
+        "macro_score": compute_macro_score(snapshot, sector=sector),
+    }
+
+
 @router.get("/snapshot")
 async def get_macro_snapshot():
     cache_key = "macro:snapshot"
@@ -18,15 +45,10 @@ async def get_macro_snapshot():
         return cached
 
     try:
-        snapshot = fetch_macro_snapshot()
-        score = compute_macro_score(snapshot)
-        result = {
-            "snapshot": snapshot,
-            "macro_score": score,
-        }
+        result = await asyncio.to_thread(_macro_snapshot_sync)
     except Exception as e:
         logger.error(f"Macro snapshot failed: {e}")
-        raise HTTPException(status_code=500, detail=f"Macro snapshot failed: {e}")
+        raise HTTPException(status_code=502, detail="Macro data provider error")
 
     await set_cache(cache_key, result, ttl=86400)
     return result
@@ -43,37 +65,16 @@ async def get_sector_analysis(sector: str):
     if not etf:
         raise HTTPException(
             status_code=404,
-            detail=f"Unknown sector: {sector}. Available: {list(SECTOR_ETFS.keys())}"
+            detail=f"Unknown sector: {sector}. Available: {list(SECTOR_ETFS.keys())}",
         )
 
     try:
-        # Get sector ETF performance
-        df = fetch_ohlcv(etf, period="6mo")
-        if df.empty:
-            raise ValueError(f"No data for sector ETF {etf}")
-
-        current = float(df["close"].iloc[-1])
-        pct_1mo = float((df["close"].iloc[-1] / df["close"].iloc[-22] - 1) * 100) if len(df) >= 22 else 0
-        pct_3mo = float((df["close"].iloc[-1] / df["close"].iloc[-66] - 1) * 100) if len(df) >= 66 else 0
-
-        # Get macro score for sector
-        snapshot = fetch_macro_snapshot()
-        macro_score = compute_macro_score(snapshot, sector=sector)
-
-        result = {
-            "sector": sector,
-            "etf": etf,
-            "price": round(current, 2),
-            "return_1mo_pct": round(pct_1mo, 2),
-            "return_3mo_pct": round(pct_3mo, 2),
-            "macro_score": macro_score,
-        }
-
+        result = await asyncio.to_thread(_sector_analysis_sync, sector, etf)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
-        logger.error(f"Sector analysis failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Sector analysis failed for {sector}: {e}")
+        raise HTTPException(status_code=502, detail="Macro data provider error")
 
     await set_cache(cache_key, result, ttl=3600)
     return result

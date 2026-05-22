@@ -1,37 +1,62 @@
-"""Macro analysis agent — uses FRED data for macro-level directional signals."""
+"""Macro analysis agent — derives a macro-environment signal from FRED data."""
+
+from __future__ import annotations
 
 from loguru import logger
-from backend.data.macro_fetcher import fetch_macro_snapshot, compute_macro_score
-from backend.data.price_fetcher import fetch_ticker_info
+
+from backend.ml.base_agent import BaseAgent, AgentStep, AgentResult
 
 
-class MacroAgent:
+class MacroAgent(BaseAgent):
     """
-    Pulls latest FRED macro indicators (Fed rate, CPI, VIX, sector ETF momentum)
-    and computes a macro risk-adjusted directional signal.
+    Pulls the latest FRED macro snapshot (Fed rate, yield curve, VIX, ...) and
+    converts it into a directional macro signal via the ``fetch_macro`` tool.
     """
 
-    async def analyze(self, ticker: str) -> dict:
-        logger.info(f"MacroAgent analyzing macro environment for {ticker}")
+    max_turns = 2
 
-        # Get sector for the ticker
-        try:
-            info = fetch_ticker_info(ticker)
-            sector = info.get("sector", "Technology")
-        except Exception:
-            sector = "Technology"
+    @property
+    def name(self) -> str:
+        return "macro"
 
-        # Get macro snapshot
-        snapshot = fetch_macro_snapshot()
+    @property
+    def tool_names(self) -> list[str]:
+        return ["fetch_macro"]
 
-        # Compute macro score
-        result = compute_macro_score(snapshot, sector=sector)
+    def _initial_thought(self, context: dict) -> str:
+        return f"Evaluate the macro environment for {context.get('ticker', '?')}."
 
-        return {
-            "direction": result["direction"],
-            "raw_score": result["raw_score"],
-            "confidence": result["confidence"],
-            "reasons": result["reasons"],
-            "sector": sector,
-            "snapshot": result["snapshot"],
-        }
+    async def _decide_action(self, context: dict, steps: list[AgentStep]):
+        if not any(s.action == "fetch_macro" for s in steps):
+            return "fetch_macro", {"sector": context.get("sector", "") or ""}
+        return None, {}
+
+    async def _interpret_observations(self, context: dict, steps: list[AgentStep]) -> AgentResult:
+        macro_obs = self._get_observation(steps, "fetch_macro")
+
+        score = macro_obs.get("score") if isinstance(macro_obs, dict) else None
+        if not isinstance(score, dict) or "raw_score" not in score:
+            error = macro_obs.get("error") if isinstance(macro_obs, dict) else "no macro result"
+            logger.warning(f"MacroAgent: macro data unavailable ({error})")
+            return AgentResult(
+                agent_name=self.name,
+                direction="neutral",
+                confidence=0.3,
+                raw_score=0.0,
+                metadata={"error": str(error)},
+            )
+
+        return AgentResult(
+            agent_name=self.name,
+            direction=score["direction"],
+            confidence=float(score.get("confidence", 0.3)),
+            raw_score=float(score["raw_score"]),
+            metadata={
+                "direction": score["direction"],
+                "raw_score": score["raw_score"],
+                "confidence": score.get("confidence", 0.3),
+                "reasons": score.get("reasons", []),
+                "sector": context.get("sector", "Unknown") or "Unknown",
+                "snapshot": score.get("snapshot", {}),
+            },
+        )

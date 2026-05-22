@@ -1,54 +1,76 @@
-"""Tests for the prediction pipeline."""
+"""Tests for the orchestrated prediction pipeline."""
 
 import pytest
-from unittest.mock import patch, AsyncMock, MagicMock
+from unittest.mock import patch, AsyncMock
 
 
 class TestEnsemble:
-    """Tests for the multi-agent ensemble system."""
+    """Tests for the multi-agent orchestrator (via ensemble_predict)."""
 
     @pytest.mark.asyncio
     async def test_ensemble_predict_returns_expected_keys(self, sample_ohlcv_df):
-        """Ensemble predict should return all expected response keys."""
+        """ensemble_predict should return all expected response keys."""
         from backend.data.feature_engineer import build_feature_df
-
         df = build_feature_df(sample_ohlcv_df, ticker="TEST")
 
+        # Tools import their deps at call time — patch the definition sites.
         with patch("backend.data.news_fetcher.fetch_news", new_callable=AsyncMock, return_value=[]), \
-             patch("backend.data.macro_fetcher.fetch_macro_snapshot", return_value={}), \
-             patch("backend.data.price_fetcher.fetch_ticker_info", return_value={"sector": "Technology"}):
-
+             patch("backend.data.macro_fetcher.fetch_macro_snapshot", return_value={}):
             from backend.ml.ensemble import ensemble_predict
             result = await ensemble_predict("TEST", df)
 
-        assert "ticker" in result
         assert result["ticker"] == "TEST"
-        assert "final_signal" in result
         assert result["final_signal"] in ("BUY", "HOLD", "SELL")
-        assert "confidence" in result
         assert 0 <= result["confidence"] <= 100
-        assert "agent_signals" in result
-        assert "risk_score" in result
-        assert "explanation" in result
+        assert -1.0 <= result["weighted_score"] <= 1.0
+        assert 0.0 <= result["risk_score"] <= 10.0
+        for key in ("agent_signals", "explanation", "thesis", "trace", "guardrail_flags"):
+            assert key in result, f"missing key: {key}"
 
     @pytest.mark.asyncio
     async def test_ensemble_agent_signals_structure(self, sample_ohlcv_df):
-        """Agent signals should have technical, sentiment, and macro keys."""
+        """Agent signals should include technical, sentiment, and macro."""
         from backend.data.feature_engineer import build_feature_df
-
         df = build_feature_df(sample_ohlcv_df, ticker="TEST")
 
         with patch("backend.data.news_fetcher.fetch_news", new_callable=AsyncMock, return_value=[]), \
-             patch("backend.data.macro_fetcher.fetch_macro_snapshot", return_value={}), \
-             patch("backend.data.price_fetcher.fetch_ticker_info", return_value={"sector": "Technology"}):
-
+             patch("backend.data.macro_fetcher.fetch_macro_snapshot", return_value={}):
             from backend.ml.ensemble import ensemble_predict
             result = await ensemble_predict("TEST", df)
 
         signals = result["agent_signals"]
-        assert "technical" in signals
-        assert "sentiment" in signals
-        assert "macro" in signals
+        assert {"technical", "sentiment", "macro"}.issubset(signals.keys())
+
+    @pytest.mark.asyncio
+    async def test_ensemble_survives_agent_failure(self, sample_ohlcv_df):
+        """A failing news provider must not break the ensemble."""
+        from backend.data.feature_engineer import build_feature_df
+        df = build_feature_df(sample_ohlcv_df, ticker="TEST")
+
+        with patch("backend.data.news_fetcher.fetch_news",
+                   new_callable=AsyncMock, side_effect=RuntimeError("NewsAPI down")), \
+             patch("backend.data.macro_fetcher.fetch_macro_snapshot", return_value={}):
+            from backend.ml.ensemble import ensemble_predict
+            result = await ensemble_predict("TEST", df)
+
+        # The ensemble survives: the sentiment agent degrades gracefully to neutral.
+        assert result["final_signal"] in ("BUY", "HOLD", "SELL")
+        assert result["agent_signals"]["sentiment"]["direction"] == "neutral"
+
+    @pytest.mark.asyncio
+    async def test_ensemble_trace_records_all_agents(self, sample_ohlcv_df):
+        """The telemetry trace should record every agent span."""
+        from backend.data.feature_engineer import build_feature_df
+        df = build_feature_df(sample_ohlcv_df, ticker="TEST")
+
+        with patch("backend.data.news_fetcher.fetch_news", new_callable=AsyncMock, return_value=[]), \
+             patch("backend.data.macro_fetcher.fetch_macro_snapshot", return_value={}):
+            from backend.ml.ensemble import ensemble_predict
+            result = await ensemble_predict("TEST", df)
+
+        trace = result["trace"]
+        agents_traced = {s["agent"] for s in trace["spans"]}
+        assert {"technical", "sentiment", "macro"}.issubset(agents_traced)
 
 
 class TestPredictRequest:
@@ -59,7 +81,12 @@ class TestPredictRequest:
         req = PredictRequest(ticker="AAPL")
         assert req.period == "2y"
 
-    def test_custom_period(self):
+    def test_ticker_is_normalized(self):
         from backend.schemas.predict import PredictRequest
-        req = PredictRequest(ticker="MSFT", period="1y")
-        assert req.period == "1y"
+        req = PredictRequest(ticker="  msft ")
+        assert req.ticker == "MSFT"
+
+    def test_empty_ticker_rejected(self):
+        from backend.schemas.predict import PredictRequest
+        with pytest.raises(ValueError):
+            PredictRequest(ticker="   ")

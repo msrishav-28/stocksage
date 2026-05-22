@@ -43,6 +43,7 @@ class Prediction(Base):
     confidence = Column(Float)
     weighted_score = Column(Float)
     risk_score = Column(Float)
+    thesis = Column(Text)
     tft_point_d1 = Column(Float)
     tft_point_d5 = Column(Float)
     tft_point_d10 = Column(Float)

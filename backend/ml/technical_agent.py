@@ -1,39 +1,71 @@
-"""Technical analysis agent — uses indicator confluence for directional signals."""
+"""Technical analysis agent — indicator confluence via the ReAct tool loop."""
 
-import pandas as pd
+from __future__ import annotations
+
 from loguru import logger
-from backend.indicators import compute_all_indicators, compute_confluence_score
+
+from backend.ml.base_agent import BaseAgent, AgentStep, AgentResult
 
 
-class TechnicalAgent:
+class TechnicalAgent(BaseAgent):
     """
     Analyses 20+ technical indicators and returns a directional signal.
-    Uses confluence scoring: counts how many indicators align.
+
+    Uses the ``compute_confluence`` tool, which counts how many indicators
+    align bullish vs bearish. The input DataFrame is expected to already carry
+    indicator columns (the orchestrator passes a feature-engineered frame);
+    ``compute_confluence_score`` degrades gracefully if any are missing.
     """
 
-    async def analyze(self, ticker: str, df: pd.DataFrame) -> dict:
-        logger.info(f"TechnicalAgent analyzing {ticker}")
+    max_turns = 2
 
-        # Ensure indicators are computed
-        if "rsi_14" not in df.columns:
-            df = compute_all_indicators(df)
+    @property
+    def name(self) -> str:
+        return "technical"
 
-        confluence = compute_confluence_score(df)
+    @property
+    def tool_names(self) -> list[str]:
+        return ["compute_confluence"]
 
-        # Extract key indicator values for metadata
-        latest = df.iloc[-1]
-        key_indicators = {
-            "rsi_14": round(float(latest.get("rsi_14", 50)), 2),
-            "macd_hist": round(float(latest.get("macd_hist", 0)), 4),
-            "adx_14": round(float(latest.get("adx_14", 0)), 2),
-            "bb_pct": round(float(latest.get("bb_pct", 0.5)), 4),
-            "volume_ratio": round(float(latest.get("volume_ratio", 1)), 2),
-            "ema_9": round(float(latest.get("ema_9", 0)), 2),
-            "ema_21": round(float(latest.get("ema_21", 0)), 2),
-            "daily_return": round(float(latest.get("daily_return", 0)), 4),
-        }
+    def _initial_thought(self, context: dict) -> str:
+        return f"Assess technical indicator confluence for {context.get('ticker', '?')}."
 
-        return {
-            **confluence,
-            "key_indicators": key_indicators,
-        }
+    async def _decide_action(self, context: dict, steps: list[AgentStep]):
+        # One tool call: compute the confluence score, then finalise.
+        if not any(s.action == "compute_confluence" for s in steps):
+            return "compute_confluence", {"df": context["df"]}
+        return None, {}
+
+    async def _interpret_observations(self, context: dict, steps: list[AgentStep]) -> AgentResult:
+        confluence = self._get_observation(steps, "compute_confluence")
+
+        if not isinstance(confluence, dict) or "raw_score" not in confluence:
+            error = confluence.get("error") if isinstance(confluence, dict) else "no confluence result"
+            logger.warning(f"TechnicalAgent: confluence unavailable ({error})")
+            return AgentResult(
+                agent_name=self.name,
+                direction="neutral",
+                confidence=0.25,
+                raw_score=0.0,
+                metadata={"error": str(error)},
+            )
+
+        df = context.get("df")
+        key_indicators = {}
+        if df is not None and len(df) > 0:
+            latest = df.iloc[-1]
+            for col in ("rsi_14", "macd_hist", "adx_14", "bb_pct", "volume_ratio", "daily_return"):
+                try:
+                    val = latest[col]
+                    key_indicators[col] = round(float(val), 4) if val == val else None
+                except (KeyError, TypeError, ValueError):
+                    key_indicators[col] = None
+
+        metadata = {**confluence, "key_indicators": key_indicators}
+        return AgentResult(
+            agent_name=self.name,
+            direction=confluence["direction"],
+            confidence=float(confluence.get("confluence_score", 0.0)),
+            raw_score=float(confluence["raw_score"]),
+            metadata=metadata,
+        )

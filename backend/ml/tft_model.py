@@ -6,12 +6,12 @@ architecture that provides quantile forecasts and feature importance.
 """
 
 import pandas as pd
-import numpy as np
 from loguru import logger
 from typing import Optional
 
 try:
-    import torch
+    # pytorch-forecasting transitively requires torch; torch itself is imported
+    # lazily inside the functions that need it.
     from pytorch_forecasting import TemporalFusionTransformer, TimeSeriesDataSet
     from pytorch_forecasting.data import GroupNormalizer
     from pytorch_forecasting.metrics import QuantileLoss
@@ -130,7 +130,6 @@ def train_tft(
     if not TFT_AVAILABLE:
         raise RuntimeError("pytorch-forecasting is not installed.")
 
-    from torch.utils.data import DataLoader
 
     train_loader = training_dataset.to_dataloader(
         train=True, batch_size=BATCH_SIZE, num_workers=0
@@ -162,20 +161,50 @@ def train_tft(
 
     trainer.fit(model, train_loader, val_loader)
     logger.success(f"Training complete. Best val_loss: {early_stop.best_score:.4f}")
+
+    # Persist the training dataset parameters next to the checkpoint. Inference
+    # MUST rebuild its dataset from these (via TimeSeriesDataSet.from_parameters)
+    # so categorical encoders and target normalizers match training exactly.
+    import os
+    import joblib
+    params_path = os.path.join(checkpoint_dir, "tft_dataset_params.pkl")
+    joblib.dump(training_dataset.get_parameters(), params_path)
+    logger.info(f"Saved TFT dataset parameters to {params_path}")
     return model
 
 
 # ── Inference ─────────────────────────────────────────────────────────────────
 
 class TFTPredictor:
+    """
+    Inference wrapper for a trained TFT checkpoint.
+
+    NOTE: inference rebuilds its TimeSeriesDataSet from the *training* dataset
+    parameters (saved by ``train_tft`` as ``tft_dataset_params.pkl`` beside the
+    checkpoint). Building a fresh dataset instead would fit new categorical
+    encoders / normalizers and silently produce wrong forecasts.
+    """
+
     _instance = None
 
     def __init__(self, checkpoint_path: str):
         if not TFT_AVAILABLE:
             raise RuntimeError("pytorch-forecasting is not installed.")
+
+        import os
+        import joblib
+
         self.model = TemporalFusionTransformer.load_from_checkpoint(checkpoint_path)
         self.model.eval()
-        logger.info(f"TFT loaded from {checkpoint_path}")
+
+        params_path = os.path.join(os.path.dirname(checkpoint_path) or ".", "tft_dataset_params.pkl")
+        if not os.path.exists(params_path):
+            raise RuntimeError(
+                f"TFT dataset parameters not found at {params_path}. "
+                f"Retrain with scripts/train_tft.py so encoders match the checkpoint."
+            )
+        self.dataset_params = joblib.load(params_path)
+        logger.info(f"TFT loaded from {checkpoint_path} (+ dataset params)")
 
     @classmethod
     def get_instance(cls, checkpoint_path: str) -> "TFTPredictor":
@@ -183,49 +212,56 @@ class TFTPredictor:
             cls._instance = cls(checkpoint_path)
         return cls._instance
 
-    def predict(
-        self,
-        df: pd.DataFrame,
-        ticker: str,
-    ) -> dict:
+    def predict(self, df: pd.DataFrame, ticker: str) -> dict:
         """
         Returns a dict with:
-          - point_forecasts: list of 10 median predicted returns
-          - quantile_bands: {q02, q10, q25, q50, q75, q90, q98} each with 10 values
-          - attention_weights: top feature importance from TFT interpreter
+          - point_forecasts: median predicted returns over the horizon
+          - quantile_bands:  {q02, q10, q25, q50, q75, q90, q98}
+          - attention_weights: feature importance (best-effort; may be omitted)
         """
         import torch
 
-        dataset = build_timeseries_dataset(df, training=False)
+        # Rebuild the dataset from TRAINING parameters so encoders align.
+        dataset = TimeSeriesDataSet.from_parameters(
+            self.dataset_params, df, predict=True, stop_randomization=True
+        )
         loader = dataset.to_dataloader(train=False, batch_size=1)
 
         with torch.no_grad():
-            raw_predictions = self.model.predict(
-                loader,
-                mode="quantiles",
-                return_index=True,
-                return_decoder_lengths=True,
-            )
+            raw = self.model.predict(loader, mode="quantiles")
 
-        predictions = raw_predictions.output.squeeze().numpy()
-        interpretation = self.model.interpret_output(
-            raw_predictions, reduction="sum"
-        )
+        # `predict` returns a tensor (or an object exposing `.output`).
+        output = getattr(raw, "output", raw)
+        predictions = output.squeeze().cpu().numpy()
+        if predictions.ndim == 1:  # single-horizon edge case
+            predictions = predictions.reshape(1, -1)
 
         quantile_labels = [0.02, 0.10, 0.25, 0.50, 0.75, 0.90, 0.98]
+        median_idx = 3  # q50
 
-        return {
+        result = {
             "ticker": ticker,
-            "horizon_days": MAX_PREDICTION_LENGTH,
-            "point_forecasts": predictions[:, 3].tolist(),   # median = q50 index 3
+            "horizon_days": predictions.shape[0],
+            "point_forecasts": predictions[:, median_idx].tolist(),
             "quantile_bands": {
-                f"q{int(q*100):02d}": predictions[:, i].tolist()
+                f"q{int(q * 100):02d}": predictions[:, i].tolist()
                 for i, q in enumerate(quantile_labels)
-            },
-            "attention_weights": {
-                "encoder_variables": interpretation["encoder_variables"]
-                    .numpy().tolist(),
-                "decoder_variables": interpretation["decoder_variables"]
-                    .numpy().tolist(),
+                if i < predictions.shape[1]
             },
         }
+
+        # Attention/interpretation is best-effort — never fail a forecast for it.
+        try:
+            with torch.no_grad():
+                raw_full = self.model.predict(loader, mode="raw")
+            interpretation = self.model.interpret_output(
+                getattr(raw_full, "output", raw_full), reduction="sum"
+            )
+            result["attention_weights"] = {
+                "encoder_variables": interpretation["encoder_variables"].cpu().numpy().tolist(),
+                "decoder_variables": interpretation["decoder_variables"].cpu().numpy().tolist(),
+            }
+        except Exception as e:
+            logger.warning(f"TFT interpretation unavailable: {e}")
+
+        return result

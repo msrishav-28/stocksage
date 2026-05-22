@@ -16,26 +16,42 @@ def build_feature_df(df: pd.DataFrame, ticker: str = "UNKNOWN") -> pd.DataFrame:
       - Calendar features (day_of_week, day_of_month, month, quarter)
       - Placeholder time_idx for TFT
       - Static columns: ticker, sector, market_cap_tier
+
+    Handles both DatetimeIndex and integer-indexed DataFrames gracefully.
     """
     logger.info(f"Building feature DataFrame for {ticker} ({len(df)} rows)")
 
     # Compute technical indicators
     df = compute_all_indicators(df)
 
-    # Calendar / time features
-    df["day_of_week"] = df.index.dayofweek
-    df["day_of_month"] = df.index.day
-    df["month"] = df.index.month
-    df["quarter"] = df.index.quarter
+    # Calendar / time features — guard against non-DatetimeIndex (e.g., test fixtures)
+    if isinstance(df.index, pd.DatetimeIndex):
+        df["day_of_week"]  = df.index.dayofweek.astype(float)
+        df["day_of_month"] = df.index.day.astype(float)
+        df["month"]        = df.index.month.astype(float)
+        df["quarter"]      = df.index.quarter.astype(float)
+    else:
+        # Fallback: try to parse index as datetime; if not possible use zeros
+        try:
+            dt_index = pd.to_datetime(df.index)
+            df["day_of_week"]  = dt_index.dayofweek.astype(float)
+            df["day_of_month"] = dt_index.day.astype(float)
+            df["month"]        = dt_index.month.astype(float)
+            df["quarter"]      = dt_index.quarter.astype(float)
+        except Exception:
+            df["day_of_week"]  = 0.0
+            df["day_of_month"] = 1.0
+            df["month"]        = 1.0
+            df["quarter"]      = 1.0
 
-    # Is-earnings-week & holiday proximity stubs (need external data to populate)
-    df["is_earnings_week"] = 0
-    df["is_holiday_proximity"] = 0
+    # Earnings-week & holiday proximity stubs (require external calendars)
+    df["is_earnings_week"]    = 0.0
+    df["is_holiday_proximity"] = 0.0
 
-    # Time index for TFT
-    df["time_idx"] = np.arange(len(df))
+    # Sequential time index for TFT (must be integer, monotonically increasing)
+    df["time_idx"] = np.arange(len(df), dtype=int)
 
-    # Static categoricals (will be enriched via ticker info later)
+    # Static categoricals (enriched via ticker info later)
     df["ticker"] = ticker
     if "sector" not in df.columns:
         df["sector"] = "Unknown"
@@ -48,11 +64,15 @@ def build_feature_df(df: pd.DataFrame, ticker: str = "UNKNOWN") -> pd.DataFrame:
     if "beta" not in df.columns:
         df["beta"] = 1.0
 
-    # Sentiment stubs (will be filled by sentiment agent)
+    # Sentiment stubs (populated by the sentiment agent in ensemble flow)
     if "sentiment_score" not in df.columns:
         df["sentiment_score"] = 0.0
     if "sentiment_volume" not in df.columns:
         df["sentiment_volume"] = 0.0
+
+    # Ensure close_return (TFT target) is present
+    if "close_return" not in df.columns:
+        df["close_return"] = df["close"].pct_change()
 
     df = df.dropna()
     logger.success(f"Feature DF ready: {len(df)} rows × {len(df.columns)} columns")
