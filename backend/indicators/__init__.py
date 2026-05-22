@@ -7,18 +7,6 @@ Uses pandas-ta for standard indicators and PyWavelets for wavelet decomposition.
 import pandas as pd
 import numpy as np
 from loguru import logger
-from backend.indicators.momentum import (
-    compute_rsi,
-    compute_macd,
-    compute_stochastic,
-    compute_cci,
-    compute_mfi,
-    compute_roc,
-    compute_williams_r,
-)
-from backend.indicators.trend import compute_ema, compute_sma, compute_adx, compute_aroon
-from backend.indicators.volatility import compute_bbands, compute_atr, compute_keltner
-from backend.indicators.volume import compute_obv, compute_vwap, compute_cmf, compute_ad
 
 try:
     import pandas_ta as ta
@@ -56,63 +44,7 @@ def compute_all_indicators(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
 
     if ta is None:
-        logger.warning("pandas-ta not available, using fallback indicator implementations.")
-        df["rsi_14"] = compute_rsi(df["close"], 14)
-        df["rsi_28"] = compute_rsi(df["close"], 28)
-
-        macd = compute_macd(df["close"])
-        df["macd"] = macd.iloc[:, 0]
-        df["macd_signal"] = macd.iloc[:, 1]
-        df["macd_hist"] = macd.iloc[:, 2]
-
-        stoch = compute_stochastic(df["high"], df["low"], df["close"])
-        df["stoch_k"] = stoch.iloc[:, 0]
-        df["stoch_d"] = stoch.iloc[:, 1]
-        df["cci_20"] = compute_cci(df["high"], df["low"], df["close"], 20)
-        df["mfi_14"] = compute_mfi(df["high"], df["low"], df["close"], df["volume"], 14)
-        df["roc_10"] = compute_roc(df["close"], 10)
-        df["williams_r"] = compute_williams_r(df["high"], df["low"], df["close"], 14)
-
-        df["ema_9"] = compute_ema(df["close"], 9)
-        df["ema_21"] = compute_ema(df["close"], 21)
-        df["ema_50"] = compute_ema(df["close"], 50)
-        df["ema_200"] = compute_ema(df["close"], 200)
-        df["sma_20"] = compute_sma(df["close"], 20)
-        df["sma_50"] = compute_sma(df["close"], 50)
-
-        adx = compute_adx(df["high"], df["low"], df["close"], 14)
-        df["adx_14"] = adx.iloc[:, 0]
-        df["dmp_14"] = adx.iloc[:, 1]
-        df["dmn_14"] = adx.iloc[:, 2]
-
-        aroon = compute_aroon(df["high"], df["low"], 25)
-        df["aroon_up"] = aroon.iloc[:, 0]
-        df["aroon_down"] = aroon.iloc[:, 1]
-
-        bb = compute_bbands(df["close"], 20, 2)
-        df["bb_upper"] = bb.iloc[:, 0]
-        df["bb_middle"] = bb.iloc[:, 1]
-        df["bb_lower"] = bb.iloc[:, 2]
-        df["bb_width"] = bb.iloc[:, 3]
-        df["bb_pct"] = bb.iloc[:, 4]
-
-        df["atr_14"] = compute_atr(df["high"], df["low"], df["close"], 14)
-        kc = compute_keltner(df["high"], df["low"], df["close"], 20, 2)
-        df["kc_upper"] = kc.iloc[:, 0]
-        df["kc_lower"] = kc.iloc[:, 1]
-
-        df["obv"] = compute_obv(df["close"], df["volume"])
-        df["vwap"] = compute_vwap(df["high"], df["low"], df["close"], df["volume"])
-        df["cmf_20"] = compute_cmf(df["high"], df["low"], df["close"], df["volume"], 20)
-        df["ad_line"] = compute_ad(df["high"], df["low"], df["close"], df["volume"])
-        df["volume_sma20"] = compute_sma(df["volume"], 20)
-        df["volume_ratio"] = df["volume"] / df["volume_sma20"]
-
-        if pywt is not None and len(df) > 16:
-            df["close_wavelet"] = _wavelet_smooth(df["close"].values)
-        else:
-            df["close_wavelet"] = df["close"]
-
+        logger.warning("pandas-ta not available, returning df with derived features only.")
         df = _compute_basic_derived(df)
         return df.dropna()
 

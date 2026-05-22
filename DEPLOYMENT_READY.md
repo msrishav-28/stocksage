@@ -1,57 +1,56 @@
-# Deployment Readiness Report
-
-## Status: READY FOR DEPLOYMENT
+# Deployment Readiness
 
 ## Architecture
-- Frontend: React (react-scripts 5)
-- Backend: FastAPI 0.115 + Uvicorn
-- Database: PostgreSQL/TimescaleDB via SQLAlchemy async
-- Auth: No user-auth system implemented in current product scope
 
-## Required Environment Variables
+- **Frontend:** React (Create React App) single-page app — `frontend/`
+- **Backend:** FastAPI 0.115 + Uvicorn — `backend/`
+- **Database:** PostgreSQL / TimescaleDB via SQLAlchemy async (degrades gracefully if absent)
+- **Cache:** Redis (degrades gracefully if absent)
+- **Auth:** none — no user-identity layer in the current scope
 
-| Variable | Purpose | Source |
+## Environment variables
+
+| Variable | Purpose | Notes |
 |---|---|---|
-| APP_ENV | Runtime mode and environment behavior | Set by deploy platform (`production`) |
-| DEBUG | Debug-level logging toggle | Set by deploy platform (`false` in prod) |
-| DATABASE_URL | Primary DB connection string | PostgreSQL/Timescale provider |
-| REDIS_URL | Cache connection string | Redis provider |
-| NEWS_API_KEY | News sentiment ingestion | https://newsapi.org |
-| FRED_API_KEY | Macroeconomic data ingestion | https://fred.stlouisfed.org |
-| ALPHAVANTAGE_KEY | Optional external market API key | https://www.alphavantage.co |
-| TFT_CHECKPOINT_PATH | Optional TFT model checkpoint path | Artifact storage / mounted volume |
-| FINBERT_MODEL | HuggingFace model id for sentiment | HuggingFace model registry |
-| DEVICE | Inference device (`cpu`/`cuda`) | Deployment runtime config |
-| MODAL_TOKEN_ID | Modal API token id for remote inference | Modal account settings |
-| MODAL_TOKEN_SECRET | Modal API token secret | Modal account settings |
+| `APP_ENV` | Runtime mode | `production` in prod |
+| `DEBUG` | Debug logging / SQL echo | `false` in prod |
+| `DATABASE_URL` | PostgreSQL/TimescaleDB connection (asyncpg) | required for persistence |
+| `DB_AUTO_CREATE` | Create tables on startup instead of Alembic | `false` in prod |
+| `REDIS_URL` | Redis connection | optional — caching only |
+| `CORS_ORIGINS` | Comma-separated allowed frontend origins | set to the deployed frontend URL |
+| `RATE_LIMIT` | Per-IP rate limit (slowapi syntax) | e.g. `120/minute` |
+| `NEWS_API_KEY` | News sentiment ingestion | optional — neutral fallback without it |
+| `FRED_API_KEY` | Macro data ingestion | optional — neutral fallback without it |
+| `TFT_CHECKPOINT_PATH` | Trained TFT checkpoint | optional — forecast omitted without it |
+| `FINBERT_MODEL` | HuggingFace model id for sentiment | defaults to `ProsusAI/finbert` |
+| `DEVICE` | Inference device (`cpu`/`cuda`) | — |
+| `MODAL_TOKEN_ID` / `MODAL_TOKEN_SECRET` | Modal GPU inference | optional |
 
-## Deployment Steps
+## Deployment steps
+
 1. Provision PostgreSQL/TimescaleDB and Redis.
-2. Configure all required environment variables.
-3. Build backend image from `Dockerfile`.
-4. Deploy backend (`uvicorn backend.main:app --host 0.0.0.0 --port 8000`).
-5. Build and deploy frontend from `frontend/` with API proxy/base URL pointing to backend.
-6. Verify `/health` and key API endpoints (`/api/analyze`, `/api/predict`, `/api/technical/{ticker}`).
+2. Configure the environment variables above.
+3. Apply database migrations: `alembic upgrade head`.
+4. Build the backend image from `Dockerfile`.
+5. Deploy the backend: `uvicorn backend.main:app --host 0.0.0.0 --port 8000`.
+6. Build the frontend (`cd frontend && npm install && npm run build`) with
+   `REACT_APP_API_URL` pointing at the backend; serve `frontend/build`.
 
-## Post-Deployment Checklist
-- [ ] Validate DB and Redis connectivity in logs
-- [ ] Verify `GET /health` returns `{"status":"ok","version":"2.0.0"}`
-- [ ] Verify frontend submit flow works end-to-end against `/api/analyze`
-- [ ] Confirm external API keys are present (NewsAPI/FRED) for full-signal mode
-- [ ] If using TFT, ensure checkpoint exists at `TFT_CHECKPOINT_PATH`
+## Post-deployment checklist
 
-## Known Limitations / Future Work
-- External market/news providers are required for full real-time functionality.
-- No user-auth/identity layer is currently implemented.
-- Frontend currently uses a CRA baseline (consider Vite/Next migration later).
+- [ ] DB and Redis connectivity confirmed in startup logs
+- [ ] `GET /health` returns `{"status":"ok","version":"2.0.0"}`
+- [ ] `POST /api/predict/` returns a signal for a known ticker (e.g. `AAPL`)
+- [ ] `GET /api/technical/{ticker}` and `/api/competitor/{ticker}` respond
+- [ ] Frontend loads and completes a prediction end-to-end
+- [ ] `CORS_ORIGINS` includes the deployed frontend origin
+- [ ] If using the TFT forecaster, the checkpoint exists at `TFT_CHECKPOINT_PATH`
 
-## Issues Fixed in This Session
-- Unified frontend API flow to FastAPI (`/api/analyze`) instead of legacy Flask route.
-- Added compatibility analyze endpoint in FastAPI for frontend payload shape.
-- Resolved Python dependency install blockers by removing incompatible `pandas-ta` pin.
-- Added robust fallback indicator computation when `pandas-ta` is unavailable.
-- Fixed sentiment test/runtime fallback behavior for offline/no-model scenarios.
-- Fixed failing tests due incorrect patch targets in sentiment/predict tests.
-- Improved retry error behavior in price fetcher to return meaningful 404s instead of 500s.
-- Updated README to reflect actual architecture, setup, env vars, and validation commands.
+## Known limitations / future work
 
+- External providers (NewsAPI, FRED) are needed for full-fidelity signals;
+  without them the sentiment and macro agents return neutral fallbacks.
+- No user-auth / identity layer is implemented.
+- The frontend is on a Create React App baseline (a Vite migration is optional
+  future work).
+- The TFT forecaster is optional and must be trained before it contributes.
