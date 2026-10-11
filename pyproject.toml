@@ -1,35 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "stocksage"
-version = "2.0.0"
-description = "AI-powered stock analysis and prediction platform"
+version = "3.0.0"
+description = "Auditable CPU experiments for next-session equity returns"
 readme = "README.md"
-requires-python = ">=3.11"
-license = {text = "MIT"}
-
-# Runtime dependencies are sourced from requirements.txt (single source of truth).
-# requirements.txt is what the Dockerfile installs; this keeps the two in sync.
-# Dev/test tooling lives in requirements-dev.txt.
+requires-python = ">=3.12,<3.13"
 dynamic = ["dependencies"]
 
-[build-system]
-requires = ["setuptools>=68.0"]
-build-backend = "setuptools.build_meta"
+[project.scripts]
+stocksage = "stocksage.__main__:main"
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
 
 [tool.setuptools.packages.find]
-include = ["backend*"]
-
-[tool.ruff]
-target-version = "py311"
-line-length = 120
-
-[tool.ruff.lint]
-# E701: the aligned `if cond: signals.append(n)` pattern used in the indicator
-# confluence scoring is intentional and more readable than the expanded form.
-ignore = ["E701"]
-
-[tool.pytest.ini_options]
-asyncio_mode = "auto"
-testpaths = ["backend/tests"]
+include = ["stocksage*"]
