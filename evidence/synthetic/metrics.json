@@ -1,0 +1,766 @@
+{
+  "always_long_intraday": {
+    "0": {
+      "active_fraction": 1.0,
+      "active_symbol_sessions": 1053,
+      "annualized_sharpe_zero_rf": 0.9843673981746196,
+      "cost_bps_per_side": 0.0,
+      "max_drawdown": -0.1395622767709569,
+      "mean_daily_net_return": 0.0006072023298052207,
+      "net_compound_return": 0.21690276154784627,
+      "sessions": 351
+    },
+    "10": {
+      "active_fraction": 1.0,
+      "active_symbol_sessions": 1053,
+      "annualized_sharpe_zero_rf": -2.2579370194990958,
+      "cost_bps_per_side": 10.0,
+      "max_drawdown": -0.4102692781865316,
+      "mean_daily_net_return": -0.0013927976701947798,
+      "net_compound_return": -0.39711833733867563,
+      "sessions": 351
+    },
+    "25": {
+      "active_fraction": 1.0,
+      "active_symbol_sessions": 1053,
+      "annualized_sharpe_zero_rf": -7.121393646009669,
+      "cost_bps_per_side": 25.0,
+      "max_drawdown": -0.7917081494189557,
+      "mean_daily_net_return": -0.00439279767019478,
+      "net_compound_return": -0.7903239627241936,
+      "sessions": 351
+    },
+    "5": {
+      "active_fraction": 1.0,
+      "active_symbol_sessions": 1053,
+      "annualized_sharpe_zero_rf": -0.6367848106622389,
+      "cost_bps_per_side": 5.0,
+      "max_drawdown": -0.27348246957874145,
+      "mean_daily_net_return": -0.0003927976701947799,
+      "net_compound_return": -0.14331674899879865,
+      "sessions": 351
+    }
+  },
+  "config": {
+    "block_size": 10,
+    "bootstrap_samples": 1000,
+    "embargo": 5,
+    "min_train": 252,
+    "seed": 28,
+    "test_size": 63
+  },
+  "models": {
+    "hist_gradient_boosting": {
+      "by_fold": {
+        "0": {
+          "coverage_80": 0.7671957671957672,
+          "direction_accuracy": 0.5185185185185185,
+          "mae": 0.010329851763372694,
+          "mean_interval_width": 0.029227709044680375,
+          "n": 189,
+          "pinball_q10": 0.002202233979007008,
+          "pinball_q90": 0.0024438225917936774,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.013237513909548316,
+          "sessions": 63
+        },
+        "1": {
+          "coverage_80": 0.7354497354497355,
+          "direction_accuracy": 0.5343915343915344,
+          "mae": 0.010557803335106796,
+          "mean_interval_width": 0.029513493818030614,
+          "n": 189,
+          "pinball_q10": 0.0022637185026379973,
+          "pinball_q90": 0.00304091772980825,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.014211923564293984,
+          "sessions": 63
+        },
+        "2": {
+          "coverage_80": 0.8095238095238095,
+          "direction_accuracy": 0.5291005291005291,
+          "mae": 0.008944627895329795,
+          "mean_interval_width": 0.03028254713484679,
+          "n": 189,
+          "pinball_q10": 0.0019785290654072596,
+          "pinball_q90": 0.0019903644832257425,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.011146740797498996,
+          "sessions": 63
+        },
+        "3": {
+          "coverage_80": 0.7671957671957672,
+          "direction_accuracy": 0.5185185185185185,
+          "mae": 0.009846108185449787,
+          "mean_interval_width": 0.029664349982489877,
+          "n": 189,
+          "pinball_q10": 0.0019075262312605492,
+          "pinball_q90": 0.0025302091166328764,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.012553215463449362,
+          "sessions": 63
+        },
+        "4": {
+          "coverage_80": 0.7142857142857143,
+          "direction_accuracy": 0.5291005291005291,
+          "mae": 0.010986201162677924,
+          "mean_interval_width": 0.029835720459776758,
+          "n": 189,
+          "pinball_q10": 0.002411419712360839,
+          "pinball_q90": 0.0024672258506087887,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.013771109872100975,
+          "sessions": 63
+        },
+        "5": {
+          "coverage_80": 0.7685185185185185,
+          "direction_accuracy": 0.5370370370370371,
+          "mae": 0.010539714155084713,
+          "mean_interval_width": 0.03047221836693721,
+          "n": 108,
+          "pinball_q10": 0.002249646569188908,
+          "pinball_q90": 0.002424486614399931,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.013400757571352407,
+          "sessions": 36
+        }
+      },
+      "by_symbol": {
+        "SYN0": {
+          "coverage_80": 0.7407407407407407,
+          "direction_accuracy": 0.5270655270655271,
+          "mae": 0.010552981240925755,
+          "mean_interval_width": 0.029388905378011948,
+          "n": 351,
+          "pinball_q10": 0.0023005015869337632,
+          "pinball_q90": 0.002606882727940189,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.013512398916879935,
+          "sessions": 351
+        },
+        "SYN1": {
+          "coverage_80": 0.7293447293447294,
+          "direction_accuracy": 0.5185185185185185,
+          "mae": 0.010518913760630393,
+          "mean_interval_width": 0.029593390975607065,
+          "n": 351,
+          "pinball_q10": 0.0021747477533610874,
+          "pinball_q90": 0.00259316752435177,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.013528590549767065,
+          "sessions": 351
+        },
+        "SYN2": {
+          "coverage_80": 0.8091168091168092,
+          "direction_accuracy": 0.5356125356125356,
+          "mae": 0.00945202830720522,
+          "mean_interval_width": 0.030368135688420967,
+          "n": 351,
+          "pinball_q10": 0.002012641329818319,
+          "pinball_q90": 0.0022619285832530464,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.012109216831061812,
+          "sessions": 351
+        }
+      },
+      "long_cash": {
+        "0": {
+          "active_fraction": 0.4928774928774929,
+          "active_symbol_sessions": 519,
+          "annualized_sharpe_zero_rf": 1.3530563799616588,
+          "cost_bps_per_side": 0.0,
+          "max_drawdown": -0.05832947008400968,
+          "mean_daily_net_return": 0.00048408470336534304,
+          "net_compound_return": 0.17849109942331998,
+          "sessions": 351
+        },
+        "10": {
+          "active_fraction": 0.16999050332383667,
+          "active_symbol_sessions": 179,
+          "annualized_sharpe_zero_rf": -1.529131972804692,
+          "cost_bps_per_side": 10.0,
+          "max_drawdown": -0.12736613314316791,
+          "mean_daily_net_return": -0.0003196235556100775,
+          "net_compound_return": -0.1078666780693549,
+          "sessions": 351
+        },
+        "25": {
+          "active_fraction": 0.01899335232668566,
+          "active_symbol_sessions": 20,
+          "annualized_sharpe_zero_rf": -1.1229254311282304,
+          "cost_bps_per_side": 25.0,
+          "max_drawdown": -0.0417244910783755,
+          "mean_daily_net_return": -7.571569802981188e-05,
+          "net_compound_return": -0.026422350006137463,
+          "sessions": 351
+        },
+        "5": {
+          "active_fraction": 0.30959164292497626,
+          "active_symbol_sessions": 326,
+          "annualized_sharpe_zero_rf": -0.37175293799922443,
+          "cost_bps_per_side": 5.0,
+          "max_drawdown": -0.12269224925988054,
+          "mean_daily_net_return": -0.00010165697498870512,
+          "net_compound_return": -0.0382357595262619,
+          "sessions": 351
+        }
+      },
+      "overall": {
+        "coverage_80": 0.7597340930674265,
+        "direction_accuracy": 0.5270655270655271,
+        "mae": 0.010174641102920457,
+        "mean_interval_width": 0.02978347734734666,
+        "n": 1053,
+        "pinball_q10": 0.0021626302233710565,
+        "pinball_q90": 0.002487326278515001,
+        "prediction_tie_rate": 0.0,
+        "rmse": 0.013067017244622883,
+        "sessions": 351
+      },
+      "paired_mae_vs_zero": {
+        "block_sessions": 10,
+        "ci95": [
+          -6.134799250578387e-05,
+          0.00026580084939914256
+        ],
+        "interpretation": "Negative favors model; descriptive dependence-aware interval, not a discovery claim",
+        "mean_delta": 0.0001054583708661868,
+        "replicates": 1000
+      }
+    },
+    "ridge": {
+      "by_fold": {
+        "0": {
+          "coverage_80": 0.783068783068783,
+          "direction_accuracy": 0.4708994708994709,
+          "mae": 0.010436533981303136,
+          "mean_interval_width": 0.031419240211179575,
+          "n": 189,
+          "pinball_q10": 0.002267051045719297,
+          "pinball_q90": 0.002437613815339464,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.013065767270356687,
+          "sessions": 63
+        },
+        "1": {
+          "coverage_80": 0.7619047619047619,
+          "direction_accuracy": 0.5185185185185185,
+          "mae": 0.010604783937862685,
+          "mean_interval_width": 0.03122408243483397,
+          "n": 189,
+          "pinball_q10": 0.0021961286078790226,
+          "pinball_q90": 0.0029418216833673734,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.014116039476550706,
+          "sessions": 63
+        },
+        "2": {
+          "coverage_80": 0.8412698412698413,
+          "direction_accuracy": 0.48148148148148145,
+          "mae": 0.00879689299493732,
+          "mean_interval_width": 0.031489415002890486,
+          "n": 189,
+          "pinball_q10": 0.001997314388547544,
+          "pinball_q90": 0.0019489375493376975,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.010979034349607474,
+          "sessions": 63
+        },
+        "3": {
+          "coverage_80": 0.8148148148148148,
+          "direction_accuracy": 0.4656084656084656,
+          "mae": 0.009795674428629273,
+          "mean_interval_width": 0.03136174631815159,
+          "n": 189,
+          "pinball_q10": 0.0018968841835237435,
+          "pinball_q90": 0.0024438160402149942,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.012433650697151173,
+          "sessions": 63
+        },
+        "4": {
+          "coverage_80": 0.7513227513227513,
+          "direction_accuracy": 0.4708994708994709,
+          "mae": 0.01083490790719947,
+          "mean_interval_width": 0.031279021442554254,
+          "n": 189,
+          "pinball_q10": 0.002459916819874098,
+          "pinball_q90": 0.002422322119165789,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.01359282320551587,
+          "sessions": 63
+        },
+        "5": {
+          "coverage_80": 0.7870370370370371,
+          "direction_accuracy": 0.5555555555555556,
+          "mae": 0.01026948781104353,
+          "mean_interval_width": 0.03164742918603885,
+          "n": 108,
+          "pinball_q10": 0.002255521753614124,
+          "pinball_q90": 0.0023194872522717463,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.012858675475012816,
+          "sessions": 36
+        }
+      },
+      "by_symbol": {
+        "SYN0": {
+          "coverage_80": 0.7606837606837606,
+          "direction_accuracy": 0.4985754985754986,
+          "mae": 0.010433103035532519,
+          "mean_interval_width": 0.03138472447721601,
+          "n": 351,
+          "pinball_q10": 0.0023237526695107104,
+          "pinball_q90": 0.002497943916826076,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.013280358755696053,
+          "sessions": 351
+        },
+        "SYN1": {
+          "coverage_80": 0.7777777777777778,
+          "direction_accuracy": 0.48148148148148145,
+          "mae": 0.010530761547349684,
+          "mean_interval_width": 0.03138472447721601,
+          "n": 351,
+          "pinball_q10": 0.002190916881239854,
+          "pinball_q90": 0.0025068738345068067,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.013379051842181086,
+          "sessions": 351
+        },
+        "SYN2": {
+          "coverage_80": 0.8319088319088319,
+          "direction_accuracy": 0.48717948717948717,
+          "mae": 0.009371481878171436,
+          "mean_interval_width": 0.03138472447721601,
+          "n": 351,
+          "pinball_q10": 0.002004034474885007,
+          "pinball_q90": 0.002275145899518211,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.011931688795948723,
+          "sessions": 351
+        }
+      },
+      "long_cash": {
+        "0": {
+          "active_fraction": 0.4567901234567901,
+          "active_symbol_sessions": 481,
+          "annualized_sharpe_zero_rf": 0.8855574192154052,
+          "cost_bps_per_side": 0.0,
+          "max_drawdown": -0.05269748320119616,
+          "mean_daily_net_return": 0.00030397090345920174,
+          "net_compound_return": 0.10682391462350371,
+          "sessions": 351
+        },
+        "10": {
+          "active_fraction": 0.006647673314339981,
+          "active_symbol_sessions": 7,
+          "annualized_sharpe_zero_rf": 0.523000940342594,
+          "cost_bps_per_side": 10.0,
+          "max_drawdown": -0.004269276693298685,
+          "mean_daily_net_return": 1.8063250740925022e-05,
+          "net_compound_return": 0.0063076522112577305,
+          "sessions": 351
+        },
+        "25": {
+          "active_fraction": 0.0,
+          "active_symbol_sessions": 0,
+          "annualized_sharpe_zero_rf": null,
+          "cost_bps_per_side": 25.0,
+          "max_drawdown": 0.0,
+          "mean_daily_net_return": 0.0,
+          "net_compound_return": 0.0,
+          "sessions": 351
+        },
+        "5": {
+          "active_fraction": 0.09116809116809117,
+          "active_symbol_sessions": 96,
+          "annualized_sharpe_zero_rf": 0.4276911439651446,
+          "cost_bps_per_side": 5.0,
+          "max_drawdown": -0.025329430532806452,
+          "mean_daily_net_return": 5.93487005199754e-05,
+          "net_compound_return": 0.020183643800056217,
+          "sessions": 351
+        }
+      },
+      "overall": {
+        "coverage_80": 0.7901234567901234,
+        "direction_accuracy": 0.4890788224121557,
+        "mae": 0.010111782153684547,
+        "mean_interval_width": 0.03138472447721601,
+        "n": 1053,
+        "pinball_q10": 0.0021729013418785243,
+        "pinball_q90": 0.002426654550283698,
+        "prediction_tie_rate": 0.0,
+        "rmse": 0.012880633452320713,
+        "sessions": 351
+      },
+      "paired_mae_vs_zero": {
+        "block_sessions": 10,
+        "ci95": [
+          -7.300030400205525e-06,
+          0.00010343045224209356
+        ],
+        "interpretation": "Negative favors model; descriptive dependence-aware interval, not a discovery claim",
+        "mean_delta": 4.259942163027718e-05,
+        "replicates": 1000
+      }
+    },
+    "train_mean": {
+      "by_fold": {
+        "0": {
+          "coverage_80": 0.7883597883597884,
+          "direction_accuracy": 0.49206349206349204,
+          "mae": 0.010346457618883743,
+          "mean_interval_width": 0.03162065302494588,
+          "n": 189,
+          "pinball_q10": 0.002249482410406399,
+          "pinball_q90": 0.0024052419441941025,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.012964882726513744,
+          "sessions": 63
+        },
+        "1": {
+          "coverage_80": 0.7671957671957672,
+          "direction_accuracy": 0.48148148148148145,
+          "mae": 0.010583327705444689,
+          "mean_interval_width": 0.0317335399401863,
+          "n": 189,
+          "pinball_q10": 0.0022282569550661226,
+          "pinball_q90": 0.0028616344229103214,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.01401513787579732,
+          "sessions": 63
+        },
+        "2": {
+          "coverage_80": 0.8518518518518519,
+          "direction_accuracy": 0.49206349206349204,
+          "mae": 0.008724901645630105,
+          "mean_interval_width": 0.0323146700442797,
+          "n": 189,
+          "pinball_q10": 0.002012667294983618,
+          "pinball_q90": 0.0019270029620737565,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.010928684471793088,
+          "sessions": 63
+        },
+        "3": {
+          "coverage_80": 0.8148148148148148,
+          "direction_accuracy": 0.41798941798941797,
+          "mae": 0.009735830123891936,
+          "mean_interval_width": 0.03177150826447568,
+          "n": 189,
+          "pinball_q10": 0.00193222596802977,
+          "pinball_q90": 0.0024479484354804925,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.012440562583631585,
+          "sessions": 63
+        },
+        "4": {
+          "coverage_80": 0.7619047619047619,
+          "direction_accuracy": 0.4603174603174603,
+          "mae": 0.01082226153918132,
+          "mean_interval_width": 0.03173769045796777,
+          "n": 189,
+          "pinball_q10": 0.0024498229238906232,
+          "pinball_q90": 0.0024192876685803296,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.013573563326983049,
+          "sessions": 63
+        },
+        "5": {
+          "coverage_80": 0.7962962962962963,
+          "direction_accuracy": 0.5092592592592593,
+          "mae": 0.010348214340535478,
+          "mean_interval_width": 0.03198787453028418,
+          "n": 108,
+          "pinball_q10": 0.0022658729755226023,
+          "pinball_q90": 0.0023270875266623945,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.012968335651626318,
+          "sessions": 36
+        }
+      },
+      "by_symbol": {
+        "SYN0": {
+          "coverage_80": 0.7777777777777778,
+          "direction_accuracy": 0.48717948717948717,
+          "mae": 0.010423204488105945,
+          "mean_interval_width": 0.03185122898061856,
+          "n": 351,
+          "pinball_q10": 0.00233514588241853,
+          "pinball_q90": 0.0024686917249808343,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.013259850374990192,
+          "sessions": 351
+        },
+        "SYN1": {
+          "coverage_80": 0.7777777777777778,
+          "direction_accuracy": 0.4757834757834758,
+          "mae": 0.01050407616678758,
+          "mean_interval_width": 0.03185122898061856,
+          "n": 351,
+          "pinball_q10": 0.0022047410586663353,
+          "pinball_q90": 0.0024766966449857133,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.013336112992084691,
+          "sessions": 351
+        },
+        "SYN2": {
+          "coverage_80": 0.8347578347578347,
+          "direction_accuracy": 0.45584045584045585,
+          "mae": 0.009294435329211436,
+          "mean_interval_width": 0.03185122898061856,
+          "n": 351,
+          "pinball_q10": 0.0020117038872786842,
+          "pinball_q90": 0.0022650853330582667,
+          "prediction_tie_rate": 0.0,
+          "rmse": 0.011882865279209951,
+          "sessions": 351
+        }
+      },
+      "long_cash": {
+        "0": {
+          "active_fraction": 0.46153846153846156,
+          "active_symbol_sessions": 486,
+          "annualized_sharpe_zero_rf": -0.4403181360829237,
+          "cost_bps_per_side": 0.0,
+          "max_drawdown": -0.11142030123102831,
+          "mean_daily_net_return": -0.00016445146284099828,
+          "net_compound_return": -0.06189139235358254,
+          "sessions": 351
+        },
+        "10": {
+          "active_fraction": 0.0,
+          "active_symbol_sessions": 0,
+          "annualized_sharpe_zero_rf": null,
+          "cost_bps_per_side": 10.0,
+          "max_drawdown": 0.0,
+          "mean_daily_net_return": 0.0,
+          "net_compound_return": 0.0,
+          "sessions": 351
+        },
+        "25": {
+          "active_fraction": 0.0,
+          "active_symbol_sessions": 0,
+          "annualized_sharpe_zero_rf": null,
+          "cost_bps_per_side": 25.0,
+          "max_drawdown": 0.0,
+          "mean_daily_net_return": 0.0,
+          "net_compound_return": 0.0,
+          "sessions": 351
+        },
+        "5": {
+          "active_fraction": 0.0,
+          "active_symbol_sessions": 0,
+          "annualized_sharpe_zero_rf": null,
+          "cost_bps_per_side": 5.0,
+          "max_drawdown": 0.0,
+          "mean_daily_net_return": 0.0,
+          "net_compound_return": 0.0,
+          "sessions": 351
+        }
+      },
+      "overall": {
+        "coverage_80": 0.7967711301044634,
+        "direction_accuracy": 0.47293447293447294,
+        "mae": 0.010073905328034986,
+        "mean_interval_width": 0.03185122898061857,
+        "n": 1053,
+        "pinball_q10": 0.0021838636094545162,
+        "pinball_q90": 0.002403491234341605,
+        "prediction_tie_rate": 0.0,
+        "rmse": 0.012843649908919076,
+        "sessions": 351
+      },
+      "paired_mae_vs_zero": {
+        "block_sessions": 10,
+        "ci95": [
+          -1.102937834981355e-05,
+          2.2627840923899744e-05
+        ],
+        "interpretation": "Negative favors model; descriptive dependence-aware interval, not a discovery claim",
+        "mean_delta": 4.722595980716418e-06,
+        "replicates": 1000
+      }
+    },
+    "zero": {
+      "by_fold": {
+        "0": {
+          "coverage_80": 0.7883597883597884,
+          "direction_accuracy": 0.0,
+          "mae": 0.010336862431676384,
+          "mean_interval_width": 0.03162065302494588,
+          "n": 189,
+          "pinball_q10": 0.002249482410406399,
+          "pinball_q90": 0.0024052419441941025,
+          "prediction_tie_rate": 1.0,
+          "rmse": 0.012920754206681208,
+          "sessions": 63
+        },
+        "1": {
+          "coverage_80": 0.7671957671957672,
+          "direction_accuracy": 0.0,
+          "mae": 0.01057773048464883,
+          "mean_interval_width": 0.0317335399401863,
+          "n": 189,
+          "pinball_q10": 0.0022282569550661226,
+          "pinball_q90": 0.0028616344229103214,
+          "prediction_tie_rate": 1.0,
+          "rmse": 0.01398642672566343,
+          "sessions": 63
+        },
+        "2": {
+          "coverage_80": 0.8518518518518519,
+          "direction_accuracy": 0.0,
+          "mae": 0.008719939792640186,
+          "mean_interval_width": 0.0323146700442797,
+          "n": 189,
+          "pinball_q10": 0.002012667294983618,
+          "pinball_q90": 0.0019270029620737565,
+          "prediction_tie_rate": 1.0,
+          "rmse": 0.01091666796999801,
+          "sessions": 63
+        },
+        "3": {
+          "coverage_80": 0.8148148148148148,
+          "direction_accuracy": 0.0,
+          "mae": 0.009730515401341483,
+          "mean_interval_width": 0.03177150826447568,
+          "n": 189,
+          "pinball_q10": 0.00193222596802977,
+          "pinball_q90": 0.0024479484354804925,
+          "prediction_tie_rate": 1.0,
+          "rmse": 0.012437866269390249,
+          "sessions": 63
+        },
+        "4": {
+          "coverage_80": 0.7619047619047619,
+          "direction_accuracy": 0.0,
+          "mae": 0.010820854173765302,
+          "mean_interval_width": 0.03173769045796777,
+          "n": 189,
+          "pinball_q10": 0.0024498229238906232,
+          "pinball_q90": 0.0024192876685803296,
+          "prediction_tie_rate": 1.0,
+          "rmse": 0.013572484138756244,
+          "sessions": 63
+        },
+        "5": {
+          "coverage_80": 0.7962962962962963,
+          "direction_accuracy": 0.0,
+          "mae": 0.010349202640402799,
+          "mean_interval_width": 0.03198787453028418,
+          "n": 108,
+          "pinball_q10": 0.0022658729755226023,
+          "pinball_q90": 0.0023270875266623945,
+          "prediction_tie_rate": 1.0,
+          "rmse": 0.01297211231763892,
+          "sessions": 36
+        }
+      },
+      "by_symbol": {
+        "SYN0": {
+          "coverage_80": 0.7777777777777778,
+          "direction_accuracy": 0.0,
+          "mae": 0.010416097878909899,
+          "mean_interval_width": 0.03185122898061856,
+          "n": 351,
+          "pinball_q10": 0.00233514588241853,
+          "pinball_q90": 0.0024686917249808343,
+          "prediction_tie_rate": 1.0,
+          "rmse": 0.013238166788124787,
+          "sessions": 351
+        },
+        "SYN1": {
+          "coverage_80": 0.7777777777777778,
+          "direction_accuracy": 0.0,
+          "mae": 0.01049037723056411,
+          "mean_interval_width": 0.03185122898061856,
+          "n": 351,
+          "pinball_q10": 0.0022047410586663353,
+          "pinball_q90": 0.0024766966449857133,
+          "prediction_tie_rate": 1.0,
+          "rmse": 0.013320028580840776,
+          "sessions": 351
+        },
+        "SYN2": {
+          "coverage_80": 0.8347578347578347,
+          "direction_accuracy": 0.0,
+          "mae": 0.009301073086688802,
+          "mean_interval_width": 0.03185122898061856,
+          "n": 351,
+          "pinball_q10": 0.0020117038872786842,
+          "pinball_q90": 0.0022650853330582667,
+          "prediction_tie_rate": 1.0,
+          "rmse": 0.01187412003513014,
+          "sessions": 351
+        }
+      },
+      "long_cash": {
+        "0": {
+          "active_fraction": 0.0,
+          "active_symbol_sessions": 0,
+          "annualized_sharpe_zero_rf": null,
+          "cost_bps_per_side": 0.0,
+          "max_drawdown": 0.0,
+          "mean_daily_net_return": 0.0,
+          "net_compound_return": 0.0,
+          "sessions": 351
+        },
+        "10": {
+          "active_fraction": 0.0,
+          "active_symbol_sessions": 0,
+          "annualized_sharpe_zero_rf": null,
+          "cost_bps_per_side": 10.0,
+          "max_drawdown": 0.0,
+          "mean_daily_net_return": 0.0,
+          "net_compound_return": 0.0,
+          "sessions": 351
+        },
+        "25": {
+          "active_fraction": 0.0,
+          "active_symbol_sessions": 0,
+          "annualized_sharpe_zero_rf": null,
+          "cost_bps_per_side": 25.0,
+          "max_drawdown": 0.0,
+          "mean_daily_net_return": 0.0,
+          "net_compound_return": 0.0,
+          "sessions": 351
+        },
+        "5": {
+          "active_fraction": 0.0,
+          "active_symbol_sessions": 0,
+          "annualized_sharpe_zero_rf": null,
+          "cost_bps_per_side": 5.0,
+          "max_drawdown": 0.0,
+          "mean_daily_net_return": 0.0,
+          "net_compound_return": 0.0,
+          "sessions": 351
+        }
+      },
+      "overall": {
+        "coverage_80": 0.7967711301044634,
+        "direction_accuracy": 0.0,
+        "mae": 0.01006918273205427,
+        "mean_interval_width": 0.03185122898061857,
+        "n": 1053,
+        "pinball_q10": 0.0021838636094545162,
+        "pinball_q90": 0.002403491234341605,
+        "prediction_tie_rate": 1.0,
+        "rmse": 0.012827924590690216,
+        "sessions": 351
+      },
+      "paired_mae_vs_zero": {
+        "block_sessions": 10,
+        "ci95": [
+          0.0,
+          0.0
+        ],
+        "interpretation": "Negative favors model; descriptive dependence-aware interval, not a discovery claim",
+        "mean_delta": 0.0,
+        "replicates": 1000
+      }
+    }
+  }
+}

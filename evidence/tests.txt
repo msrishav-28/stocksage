@@ -1,0 +1,38 @@
+test_failed_run_leaves_no_success_directory (test_cli_runtime.CLITests.test_failed_run_leaves_no_success_directory) ... ok
+test_full_offline_run_replay_and_metric_recalculation (test_cli_runtime.CLITests.test_full_offline_run_replay_and_metric_recalculation) ... ok
+test_missing_file_nonzero_and_no_fallback (test_cli_runtime.CLITests.test_missing_file_nonzero_and_no_fallback) ... ok
+test_module_entrypoint (test_cli_runtime.CLITests.test_module_entrypoint) ... ok
+test_cuda_kernel_numerical_gate (test_cli_runtime.RuntimeTests.test_cuda_kernel_numerical_gate) ... ok
+test_missing_torch_is_blocker (test_cli_runtime.RuntimeTests.test_missing_torch_is_blocker) ... ok
+test_old_torch_and_cpu_only_fail_closed (test_cli_runtime.RuntimeTests.test_old_torch_and_cpu_only_fail_closed) ... ok
+test_source_fingerprint_changes_with_code (test_cli_runtime.RuntimeTests.test_source_fingerprint_changes_with_code) ... ok
+test_fixture_repeatable (test_data_features.DataTests.test_fixture_repeatable) ... ok
+test_limits (test_data_features.DataTests.test_limits) ... ok
+test_manifest_requires_explicit_provenance (test_data_features.DataTests.test_manifest_requires_explicit_provenance) ... ok
+test_provider_mapping_ignores_external_indicators (test_data_features.DataTests.test_provider_mapping_ignores_external_indicators) ... ok
+test_reject_bad_panels (test_data_features.DataTests.test_reject_bad_panels) ... ok
+test_snapshot_round_trip_hash_and_no_overwrite (test_data_features.DataTests.test_snapshot_round_trip_hash_and_no_overwrite) ... ok
+test_future_perturbation_and_prefix_invariance (test_data_features.FeatureTests.test_future_perturbation_and_prefix_invariance) ... ok
+test_hand_computed_target_is_next_open_to_close (test_data_features.FeatureTests.test_hand_computed_target_is_next_open_to_close) ... ok
+test_symbol_isolation (test_data_features.FeatureTests.test_symbol_isolation) ... ok
+test_zero_volume_and_constant_prices_are_finite (test_data_features.FeatureTests.test_zero_volume_and_constant_prices_are_finite) ... ok
+test_bootstrap_zero_is_exact_and_reproducible (test_evaluation.MetricTests.test_bootstrap_zero_is_exact_and_reproducible) ... ok
+test_economic_invalid_data_and_costs (test_evaluation.MetricTests.test_economic_invalid_data_and_costs) ... ok
+test_forecast_metrics_by_hand (test_evaluation.MetricTests.test_forecast_metrics_by_hand) ... ok
+test_inactive_symbol_keeps_its_cash_weight (test_evaluation.MetricTests.test_inactive_symbol_keeps_its_cash_weight) ... ok
+test_initial_loss_counts_as_drawdown (test_evaluation.MetricTests.test_initial_loss_counts_as_drawdown) ... ok
+test_round_trip_fees_compounding_and_drawdown (test_evaluation.MetricTests.test_round_trip_fees_compounding_and_drawdown) ... ok
+test_future_data_cannot_change_earlier_fold_predictions (test_evaluation.ModelTests.test_future_data_cannot_change_earlier_fold_predictions) ... ok
+test_invalid_model_or_training_labels_fail (test_evaluation.ModelTests.test_invalid_model_or_training_labels_fail) ... ok
+test_models_learn_planted_relation (test_evaluation.ModelTests.test_models_learn_planted_relation) ... ok
+test_never_read_test_targets (test_evaluation.ModelTests.test_never_read_test_targets) ... ok
+test_training_mean_and_zero (test_evaluation.ModelTests.test_training_mean_and_zero) ... ok
+test_boundaries_date_groups_and_final_partial (test_evaluation.SplitTests.test_boundaries_date_groups_and_final_partial) ... ok
+test_latest_respects_label_maturity (test_evaluation.SplitTests.test_latest_respects_label_maturity) ... ok
+test_no_valid_fold_fails (test_evaluation.SplitTests.test_no_valid_fold_fails) ... ok
+test_variable_label_duration_is_purged (test_evaluation.SplitTests.test_variable_label_duration_is_purged) ... ok
+
+----------------------------------------------------------------------
+Ran 33 tests in 12.368s
+
+OK

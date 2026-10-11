@@ -1,0 +1,94 @@
+{
+  "asof_session_close": "2017-05-31",
+  "embargo_boundary": "2017-05-24",
+  "forecasts": [
+    {
+      "model": "zero",
+      "prediction": 0.0,
+      "q10": -0.015737075466999716,
+      "q90": 0.0161837492216391,
+      "symbol": "SYN0"
+    },
+    {
+      "model": "zero",
+      "prediction": 0.0,
+      "q10": -0.015737075466999716,
+      "q90": 0.0161837492216391,
+      "symbol": "SYN1"
+    },
+    {
+      "model": "zero",
+      "prediction": 0.0,
+      "q10": -0.015737075466999716,
+      "q90": 0.0161837492216391,
+      "symbol": "SYN2"
+    },
+    {
+      "model": "train_mean",
+      "prediction": 0.0001693133308589063,
+      "q10": -0.015737075466999716,
+      "q90": 0.0161837492216391,
+      "symbol": "SYN0"
+    },
+    {
+      "model": "train_mean",
+      "prediction": 0.0001693133308589063,
+      "q10": -0.015737075466999716,
+      "q90": 0.0161837492216391,
+      "symbol": "SYN1"
+    },
+    {
+      "model": "train_mean",
+      "prediction": 0.0001693133308589063,
+      "q10": -0.015737075466999716,
+      "q90": 0.0161837492216391,
+      "symbol": "SYN2"
+    },
+    {
+      "model": "ridge",
+      "prediction": 0.0016241798416620338,
+      "q10": -0.014180507606589643,
+      "q90": 0.017535765095943137,
+      "symbol": "SYN0"
+    },
+    {
+      "model": "ridge",
+      "prediction": -0.0007858861546502629,
+      "q10": -0.01659057360290194,
+      "q90": 0.01512569909963084,
+      "symbol": "SYN1"
+    },
+    {
+      "model": "ridge",
+      "prediction": -3.5167852052843656e-05,
+      "q10": -0.01583985530030452,
+      "q90": 0.015876417402228258,
+      "symbol": "SYN2"
+    },
+    {
+      "model": "hist_gradient_boosting",
+      "prediction": -0.0009354914428497681,
+      "q10": -0.020946839123237845,
+      "q90": 0.019331908122381412,
+      "symbol": "SYN0"
+    },
+    {
+      "model": "hist_gradient_boosting",
+      "prediction": -7.405358525429006e-05,
+      "q10": -0.01499145967779748,
+      "q90": 0.01606399496183447,
+      "symbol": "SYN1"
+    },
+    {
+      "model": "hist_gradient_boosting",
+      "prediction": 0.0008419942954853294,
+      "q10": -0.015810535295654925,
+      "q90": 0.01598580160399997,
+      "symbol": "SYN2"
+    }
+  ],
+  "future_session_date": null,
+  "target": "next available session open-to-close simple return",
+  "train_label_end_max": "2017-05-23",
+  "warning": "Historical snapshot forecast, not a live quote or a calibrated investment recommendation"
+}

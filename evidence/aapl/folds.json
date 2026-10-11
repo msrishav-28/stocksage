@@ -1,0 +1,60 @@
+{
+  "folds": [
+    {
+      "embargo_boundary": "2016-03-17",
+      "fold": 0,
+      "last_test_label_end": "2016-06-23",
+      "last_train_label_end": "2016-03-16",
+      "test_end": "2016-06-22",
+      "test_rows": 63,
+      "test_sessions": 63,
+      "test_start": "2016-03-24",
+      "train_end": "2016-03-15",
+      "train_rows": 252,
+      "train_sessions": 252,
+      "train_start": "2015-03-17"
+    },
+    {
+      "embargo_boundary": "2016-06-16",
+      "fold": 1,
+      "last_test_label_end": "2016-09-22",
+      "last_train_label_end": "2016-06-15",
+      "test_end": "2016-09-21",
+      "test_rows": 63,
+      "test_sessions": 63,
+      "test_start": "2016-06-23",
+      "train_end": "2016-06-14",
+      "train_rows": 315,
+      "train_sessions": 315,
+      "train_start": "2015-03-17"
+    },
+    {
+      "embargo_boundary": "2016-09-15",
+      "fold": 2,
+      "last_test_label_end": "2016-12-21",
+      "last_train_label_end": "2016-09-14",
+      "test_end": "2016-12-20",
+      "test_rows": 63,
+      "test_sessions": 63,
+      "test_start": "2016-09-22",
+      "train_end": "2016-09-13",
+      "train_rows": 378,
+      "train_sessions": 378,
+      "train_start": "2015-03-17"
+    },
+    {
+      "embargo_boundary": "2016-12-14",
+      "fold": 3,
+      "last_test_label_end": "2017-02-16",
+      "last_train_label_end": "2016-12-13",
+      "test_end": "2017-02-15",
+      "test_rows": 38,
+      "test_sessions": 38,
+      "test_start": "2016-12-21",
+      "train_end": "2016-12-12",
+      "train_rows": 441,
+      "train_sessions": 441,
+      "train_start": "2015-03-17"
+    }
+  ]
+}

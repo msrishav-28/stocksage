@@ -1,0 +1,38 @@
+{
+  "asof_session_close": "2017-02-16",
+  "embargo_boundary": "2017-02-09",
+  "forecasts": [
+    {
+      "model": "zero",
+      "prediction": 0.0,
+      "q10": -0.014067615457129,
+      "q90": 0.014237541719273626,
+      "symbol": "AAPL"
+    },
+    {
+      "model": "train_mean",
+      "prediction": 0.0003798820419451444,
+      "q10": -0.014067615457129,
+      "q90": 0.014237541719273626,
+      "symbol": "AAPL"
+    },
+    {
+      "model": "ridge",
+      "prediction": 0.0035501522433958026,
+      "q10": -0.010554510199114488,
+      "q90": 0.01677021070083666,
+      "symbol": "AAPL"
+    },
+    {
+      "model": "hist_gradient_boosting",
+      "prediction": 0.004639700240816725,
+      "q10": -0.005382188771010102,
+      "q90": 0.011296986769087575,
+      "symbol": "AAPL"
+    }
+  ],
+  "future_session_date": null,
+  "target": "next available session open-to-close simple return",
+  "train_label_end_max": "2017-02-08",
+  "warning": "Historical snapshot forecast, not a live quote or a calibrated investment recommendation"
+}
