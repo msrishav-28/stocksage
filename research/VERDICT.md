@@ -114,3 +114,11 @@ The useful ideas are OHLCV ingestion, pure feature functions, baselines, explici
 ## Replacement acceptance criteria
 
 All production modules must be exercised by tests and the CLI. Artifacts must identify source hashes, code hashes, configuration, versions and fold dates. Future-data perturbations must not change earlier features/predictions; labels must mature before the purged/embargoed boundary. Hand calculations must match fees and compounding. README numbers must be generated from committed run artifacts. Documentation is retained only to specify the experiment, audit the purge or explain a real blocker.
+
+## Implemented replacement and evidence
+
+The complete replacement is seven production modules under `stocksage/`, three unittest files, one reproduction script and one CPU workflow. Packaging/README/ignore/dependency files are the four MODIFY decisions. The `evidence/` files are consumed by the README and reproduction verifier: every prediction, numerical metric, split boundary, source/data hash, hardware status and test outcome can be checked. Source changes precede benchmark execution in the Git history.
+
+Implementation details made explicit: `min_train=252` means 252 usable feature sessions after label purging, so the first test begins at feature-session index 258 for embargo=5. Costs are a linear opening-notional approximation on both sides. Ridge intervals use training residuals; they are measured diagnostics, not calibrated confidence. Eight features are used, not a large indicator library.
+
+The first 33-test run caught a provenance bug: Git discovery could attribute an enclosing checkout to a temporary/non-repository source tree. The fix verifies the repository root; all 33 tests then passed, including a fresh-venv run. The historical results did not cause any model/feature/configuration selection change. Both ridge and histogram boosting lose to zero-return MAE on the AAPL smoke benchmark. The final README reports this directly.

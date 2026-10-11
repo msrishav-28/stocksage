@@ -1,0 +1,83 @@
+{
+  "artifacts_sha256": {
+    "folds.json": "52491f5ce54acabb948db3b6f516f0ce781185e99f93ec42bb6edb28a5064e7d",
+    "forecast.json": "ed1ac8ff023d51b373ebf5981a8cf8779c22a22154bf60b728400c679f2c3d0a",
+    "metrics.json": "1d67903e2daa7f74dffae2adc32b0aeb9d9c10f647e4d6dfd4833d380d4e34f7",
+    "predictions.csv": "3d2c960f8bb1cf468429fd676659ac48a49634cf28db4b5c1a3caec9047a3be2"
+  },
+  "command": "evaluate",
+  "config": {
+    "block_size": 10,
+    "bootstrap_samples": 1000,
+    "embargo": 5,
+    "min_train": 252,
+    "seed": 28,
+    "test_size": 63
+  },
+  "created_at": "2026-10-11T12:51:38.641096+00:00",
+  "data": {
+    "adjustment": "raw",
+    "kind": "historical_sample",
+    "license": "Dataset redistribution rights unverified; download for local evaluation only",
+    "limitations": "Old single-survivor AAPL illustration, not a vintage archive or modern universe; no dividends",
+    "point_in_time": false,
+    "retrieved_at": "2026-10-11T12:51:28.997603+00:00",
+    "sha256": "043ac9162809ffef9d36154a288af20abf7afdff64c2468339532ef26c0d9464",
+    "source": "https://raw.githubusercontent.com/plotly/datasets/6a88de1c9a95f0019566d3b568eb26444feda686/finance-charts-apple.csv",
+    "upstream_sha256": "24c7604edfd5afe862ddb9f9535e2fd7351f43711bfc442bca52055e15e37bcd"
+  },
+  "elapsed_seconds": 6.6265340759999845,
+  "features": [
+    "return_1",
+    "return_5",
+    "return_20",
+    "volatility_20",
+    "trend_20",
+    "intraday",
+    "range",
+    "relative_volume"
+  ],
+  "git_head_at_run": "9798e5c41c852ed0cffd489d3c3364a7db4de45b",
+  "input_rows": 506,
+  "memory_note": "Python allocation peak during model work; excludes some native allocations and is not total RSS/VRAM",
+  "model_parameters": {
+    "hist_gradient_boosting": {
+      "early_stopping": false,
+      "l2_regularization": 1.0,
+      "learning_rate": 0.05,
+      "max_iter": 100,
+      "max_leaf_nodes": 7,
+      "min_samples_leaf": 20
+    },
+    "ridge_alpha": 10.0
+  },
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.39",
+  "python": "3.12.14",
+  "python_traced_peak_bytes": 1505170,
+  "source_files": {
+    "pyproject.toml": "d1c1fb5235d16d4e3af6b1247994fe6fbabe58099f9a63784189e0d2c5c1f55c",
+    "requirements.txt": "837f876a7f74d8ab10d3356d1dfa77d491352faf12a2747aa4112802ca658ffa",
+    "stocksage/__init__.py": "8067a1df67f4c171072a883f63f405442ed417c946ab3a9b4c530d8f8e8d2388",
+    "stocksage/__main__.py": "b7cece06edeb9d3515fb31a029d8b0453bcd607303890fcd25ad733cc5cbf0e9",
+    "stocksage/data.py": "b75364fdc81975b46274e7f5e73aa35b63262f6e5f59fb55577a4a7ba06a1c97",
+    "stocksage/evaluation.py": "c3dc56e2ecb0e1ef2724f3331b90079b44959fb9525b78eebcb3b31157eb5667",
+    "stocksage/features.py": "12eb6ac48d992445ca1c8f7dc80a2ae9f38c1fe99cd17650177b9620bd36d5d0",
+    "stocksage/models.py": "bdc6e76abacb211113a78f45299ce4cbffd8587cf8a964df8f181ea26c4fd716",
+    "stocksage/runtime.py": "db2d8007fc93fc9181567176f38c75ccdea09a6273145e1e2cfc0bc00bea149c"
+  },
+  "source_sha256": "d4fcb28bade2b4129a0ec435521d84ca12abe53af549cd917ee3ebecb19f616a",
+  "symbols": [
+    "AAPL"
+  ],
+  "target": "next-session open-to-close simple return",
+  "threads_per_model": 1,
+  "versions": {
+    "joblib": "1.5.3",
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "scikit-learn": "1.8.0",
+    "scipy": "1.17.0",
+    "threadpoolctl": "3.6.0"
+  },
+  "working_tree_dirty": true
+}

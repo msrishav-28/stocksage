@@ -1,0 +1,19 @@
+{
+  "command": "runs/install-check/bin/python -m unittest discover -s tests -v",
+  "exit_code": 0,
+  "elapsed_seconds": 14.184502517000055,
+  "executed_at": "2026-10-11T12:51:50.634768+00:00",
+  "environment": "Fresh venv, no system site packages; pip install -e . fetched pinned dependencies",
+  "source_commit": "9798e5c41c852ed0cffd489d3c3364a7db4de45b",
+  "reproduction": {
+    "command": "runs/install-check/bin/python scripts/reproduce.py --out runs/clean-replay --verify evidence",
+    "exit_code": 0,
+    "datasets": [
+      "synthetic",
+      "aapl"
+    ],
+    "comparison": "Input and source hashes, versions, config, predictions, metrics, folds and latest forecasts matched",
+    "source_sha256": "d4fcb28bade2b4129a0ec435521d84ca12abe53af549cd917ee3ebecb19f616a"
+  },
+  "test_log_sha256": "646be418aae5576f4c063385979bfa6f9fd9b739e8e390760d630cf362402e74"
+}

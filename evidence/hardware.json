@@ -1,0 +1,11 @@
+{
+  "checked_at": "2026-10-11T12:51:09.373416+00:00",
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.39",
+  "python": "3.12.14",
+  "nvidia_smi_present": false,
+  "cuda_verified": false,
+  "torch_version": null,
+  "gpu_blocker": "ModuleNotFoundError: No module named 'torch'",
+  "command": "python -m stocksage doctor --require-cuda",
+  "exit_code": 2
+}
